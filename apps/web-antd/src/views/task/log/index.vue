@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
@@ -48,6 +48,9 @@ const [Grid] = useVbenVxeGrid({
 });
 
 const messageModalContent = ref<string>('');
+const lines = computed(() => {
+  return messageModalContent.value ? messageModalContent.value.split('\n') : [];
+});
 const [MessageModal, messageModalApi] = useVbenModal({
   onConfirm: () => messageModalApi.close(),
 });
@@ -80,10 +83,12 @@ function openTaskPlanModal() {
       title="查看信息"
       :show-cancel-button="false"
     >
-      <p style="white-space: pre-line">{{ messageModalContent }}</p>
+      <div class="terminal">
+        <pre v-for="(line, index) in lines" :key="index">{{ line }}</pre>
+      </div>
     </MessageModal>
     <TaskPlanModal title="查看当日执行计划" :show-cancel-button="false">
-      <Descriptions title="当日执行计划" layout="horizontal" bordered>
+      <Descriptions layout="horizontal" bordered>
         <DescriptionsItem label="预计执行时间" :span="4">
           {{ taskPlan?.executableTime || '-' }}
         </DescriptionsItem>
@@ -142,3 +147,15 @@ function openTaskPlanModal() {
     </Grid>
   </Page>
 </template>
+
+<style lang="scss" scoped>
+.terminal {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 15px;
+  border-radius: 4px;
+  font-family: monospace;
+  max-height: 400px;
+  overflow-y: auto;
+}
+</style>
