@@ -21,11 +21,7 @@ export namespace TaskApi {
 }
 
 async function queryTaskLog(params: Recordable<any>) {
-  return requestClient.get<Array<TaskApi.TaskLog>>('/task-log', { params });
+  return requestClient.get<Array<TaskApi.TaskLog>>('/task/log', { params });
 }
 
-async function getTaskPlan() {
-  return requestClient.get<Recordable<any>>('/task-log/plan');
-}
-
-export { getTaskPlan, queryTaskLog };
+export { queryTaskLog };

@@ -13,4 +13,7 @@ export const overridesPreferences = defineOverridesPreferences({
   widget: {
     languageToggle: false,
   },
+  theme: {
+    mode: 'light',
+  },
 });

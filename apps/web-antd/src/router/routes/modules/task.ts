@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
         },
         name: 'TaskLogs',
         path: '/task/index',
-        component: () => import('#/views/task/index.vue'),
+        component: () => import('#/views/task/log/index.vue'),
       },
     ],
   },

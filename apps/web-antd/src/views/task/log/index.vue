@@ -5,10 +5,11 @@ import { ref } from 'vue';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { Button, Tag } from 'ant-design-vue';
+import { Button, Descriptions, DescriptionsItem, Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { queryTaskLog } from '#/api/task/task-log';
+import { queryTaskLog } from '#/api/task/log';
+import { getTaskPlan } from '#/api/task/plan';
 
 import { columns, formSchema } from './data';
 
@@ -46,22 +47,60 @@ const [Grid] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-const modalContent = ref<string>('');
+const messageModalContent = ref<string>('');
 const [MessageModal, messageModalApi] = useVbenModal({
   onConfirm: () => messageModalApi.close(),
 });
-
-function openModal(content: string) {
-  modalContent.value = content;
+function openMessageModal(content: string) {
+  messageModalContent.value = content;
   messageModalApi.open();
+}
+
+const taskPlan = ref<any>({});
+const [TaskPlanModal, taskPlanModalApi] = useVbenModal({
+  onConfirm: () => taskPlanModalApi.close(),
+});
+function openTaskPlanModal() {
+  taskPlanModalApi.open();
+  taskPlanModalApi.setState({ loading: true });
+  getTaskPlan()
+    .then((data) => {
+      taskPlan.value = data;
+    })
+    .finally(() => {
+      taskPlanModalApi.setState({ loading: false });
+    });
 }
 </script>
 
 <template>
   <Page auto-content-height>
-    <MessageModal class="w-[800px]" title="查看信息" :show-cancel-button="false">
-      <p style="white-space: pre-line">{{ modalContent }}</p>
+    <MessageModal
+      class="w-[800px]"
+      title="查看信息"
+      :show-cancel-button="false"
+    >
+      <p style="white-space: pre-line">{{ messageModalContent }}</p>
     </MessageModal>
+    <TaskPlanModal title="查看当日执行计划" :show-cancel-button="false">
+      <Descriptions title="当日执行计划" layout="horizontal" bordered>
+        <DescriptionsItem label="预计执行时间" :span="4">
+          {{ taskPlan?.executableTime || '-' }}
+        </DescriptionsItem>
+        <DescriptionsItem label="开始时间" :span="4">
+          {{ taskPlan?.startTime || '-' }}
+        </DescriptionsItem>
+        <DescriptionsItem label="结束时间" :span="4">
+          {{ taskPlan?.endTime || '-' }}
+        </DescriptionsItem>
+        <DescriptionsItem label="随机分钟" :span="4">
+          {{ taskPlan?.delayMinutes || '-' }}
+        </DescriptionsItem>
+        <DescriptionsItem label="output文件内容" :span="4">
+          {{ taskPlan?.output || '-' }}
+        </DescriptionsItem>
+      </Descriptions>
+    </TaskPlanModal>
     <Grid table-title="任务日志">
       <template #isExecuted="{ row }">
         <Tag :color="row.isExecuted ? 'success' : 'warning'">
@@ -78,7 +117,7 @@ function openModal(content: string) {
         <Button
           v-if="row.scriptOutput"
           type="link"
-          @click="openModal(row.scriptOutput)"
+          @click="openMessageModal(row.scriptOutput)"
         >
           查看
         </Button>
@@ -87,12 +126,18 @@ function openModal(content: string) {
         {{ row.output }}
       </template>
       <template #error="{ row }">
-        <Button v-if="row.error" type="link" @click="openModal(row.error)">
+        <Button
+          v-if="row.error"
+          type="link"
+          @click="openMessageModal(row.error)"
+        >
           查看
         </Button>
       </template>
       <template #toolbar-tools>
-        <Button type="primary"> 查看当日计划 </Button>
+        <Button type="primary" @click="openTaskPlanModal">
+          查看当日执行计划
+        </Button>
       </template>
     </Grid>
   </Page>
