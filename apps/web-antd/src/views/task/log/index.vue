@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
@@ -150,12 +150,16 @@ function openTaskPlanModal() {
 
 <style lang="scss" scoped>
 .terminal {
-  background: #1e1e1e;
-  color: #d4d4d4;
-  padding: 15px;
-  border-radius: 4px;
-  font-family: monospace;
   max-height: 400px;
+  padding: 15px;
   overflow-y: auto;
+  font-family: monospace;
+  color: #d4d4d4;
+  background: #1e1e1e;
+  border-radius: 4px;
+
+  pre {
+    line-height: 25px;
+  }
 }
 </style>
