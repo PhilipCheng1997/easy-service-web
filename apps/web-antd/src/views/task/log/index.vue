@@ -92,6 +92,17 @@ function openTaskPlanModal() {
         <DescriptionsItem label="预计执行时间" :span="4">
           {{ taskPlan?.executableTime || '-' }}
         </DescriptionsItem>
+        <DescriptionsItem v-if="taskPlan" label="执行状态" :span="4">
+          <Tag :color="taskPlan.isExecuted ? 'success' : 'warning'">
+            {{
+              taskPlan.isExecuted
+                ? '已执行'
+                : taskPlan.isHoliday
+                  ? '跳过'
+                  : '待执行'
+            }}
+          </Tag>
+        </DescriptionsItem>
         <DescriptionsItem label="开始时间" :span="4">
           {{ taskPlan?.startTime || '-' }}
         </DescriptionsItem>
