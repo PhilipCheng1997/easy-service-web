@@ -6,30 +6,42 @@ import { confirm, Page } from '@vben/common-ui';
 import { Calendar, Tag } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
 
-import { listHoliday, saveHoliday } from '#/api/holiday';
+import { listCalendarData } from '#/api/calendar';
+import { saveHoliday } from '#/api/holiday';
 
 import CalendarHeader from './calendar-header.vue';
 
-const dates = ref<Array<string>>([]);
-const loadHolidays = (date: Dayjs = dayjs()) => {
+import { AntDesignCheckCircleFilled, AntDesignCloseCircleFilled, AntDesignClockCircleFilled } from "@vben/icons";
+
+const calendarDataMap = ref<any>({});
+const loadCalendarData = async (date: Dayjs = dayjs()) => {
+  calendarDataMap.value = {};
   const startDate = date
     .subtract(1, 'month')
     .startOf('month')
     .format('YYYY-MM-DD');
   const endDate = date.add(1, 'month').endOf('month').format('YYYY-MM-DD');
-  listHoliday({ startDate, endDate }).then((data) => (dates.value = data));
+  const calendarDataList = await listCalendarData({ startDate, endDate });
+  for (const i in calendarDataList) {
+    const calendarData = calendarDataList[i];
+    if (!calendarDataMap.value[calendarData.date]) {
+      calendarDataMap.value[calendarData.date] = [];
+    }
+    calendarDataMap.value[calendarData.date].push(calendarData);
+  }
 };
-loadHolidays();
+loadCalendarData();
 
 const value = ref<Dayjs>();
 const handleSelect = (value: Dayjs, { source }: any) => {
   if (source === 'customize') {
-    loadHolidays(value);
+    loadCalendarData(value);
     return;
   }
   const date = value?.format('YYYY-MM-DD');
-  let confirmContent = '';
-  confirmContent = dates.value.includes(date)
+  const confirmContent = calendarDataMap.value[date]?.find(
+    (item: any) => item.color === 'error',
+  )
     ? `确定要删除休假日期${date}？`
     : `确定要指定日期${date}为休假日期？`;
   confirm({
@@ -39,7 +51,7 @@ const handleSelect = (value: Dayjs, { source }: any) => {
   })
     .then(() => {
       saveHoliday(date).then(() => {
-        loadHolidays(value);
+        loadCalendarData(value);
       });
     })
     .catch(() => {});
@@ -54,12 +66,19 @@ const handleSelect = (value: Dayjs, { source }: any) => {
           <CalendarHeader :slot-props="slotProps" />
         </template>
         <template #dateCellRender="{ current }">
-          <div class="flex justify-end">
+          <div v-if="calendarDataMap[current.format('YYYY-MM-DD')]">
             <Tag
-              color="error"
-              v-if="dates.includes(current.format('YYYY-MM-DD'))"
+              v-for="item in calendarDataMap[current.format('YYYY-MM-DD')]"
+              class="mb-1 block"
+              :color="item.color"
+              :key="item.date"
             >
-              该日期不执行
+              <template #icon>
+                <AntDesignCheckCircleFilled v-if="item.color === 'success'" />
+                <AntDesignCloseCircleFilled v-if="item.color === 'error'" />
+                <AntDesignClockCircleFilled v-if="item.color === 'warning'" />
+              </template>
+              {{ item.content }}
             </Tag>
           </div>
         </template>

@@ -19,3 +19,13 @@ export const AntDesignLeftOutlined = createIconifyIcon(
 export const AntDesignRightOutlined = createIconifyIcon(
   'ant-design:right-outlined',
 );
+
+export const AntDesignCheckCircleFilled = createIconifyIcon(
+  'ant-design:check-circle-filled',
+);
+export const AntDesignCloseCircleFilled = createIconifyIcon(
+  'ant-design:close-circle-filled',
+);
+export const AntDesignClockCircleFilled = createIconifyIcon(
+  'ant-design:clock-circle-filled',
+);
