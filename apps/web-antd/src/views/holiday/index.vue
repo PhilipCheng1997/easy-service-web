@@ -22,9 +22,9 @@ const loadHolidays = (date: Dayjs = dayjs()) => {
 loadHolidays();
 
 const value = ref<Dayjs>();
-const handleSelect = (value: Dayjs, { source }) => {
+const handleSelect = (value: Dayjs, { source }: any) => {
   if (source === 'customize') {
-    loadHolidays(value)
+    loadHolidays(value);
     return;
   }
   const date = value?.format('YYYY-MM-DD');
