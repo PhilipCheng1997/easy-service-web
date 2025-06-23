@@ -1,18 +1,31 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { computed, defineProps } from 'vue';
 
-import { Button, message, Select, SelectOption, Upload } from 'ant-design-vue';
-import { Dayjs } from 'dayjs';
+import { AntDesignLeftOutlined, AntDesignRightOutlined } from '@vben/icons';
+
+import {
+  Button,
+  ButtonGroup,
+  message,
+  Select,
+  SelectOption,
+  Upload,
+} from 'ant-design-vue';
+import dayjs, { Dayjs } from 'dayjs';
 
 import { importHoliday } from '#/api/holiday';
 
 import 'dayjs/plugin/localeData';
 
-defineProps({
+const props = defineProps({
   slotProps: {
     type: Object,
     default: () => {},
   },
+});
+
+const yearMonth = computed(() => {
+  return props.slotProps.value.format('YYYY-MM');
 });
 
 const getMonths = (value: Dayjs) => {
@@ -33,6 +46,16 @@ const getYears = (value: Dayjs) => {
   return years;
 };
 
+const adjustMonth = (offset: number) => {
+  props.slotProps.onChange(
+    props.slotProps.value.month(props.slotProps.value.month() + offset),
+  );
+};
+
+const gotoToday = () => {
+  props.slotProps.onChange(dayjs());
+};
+
 const customUpload = async (uploadFileParams: any) => {
   try {
     await importHoliday(uploadFileParams.file);
@@ -45,54 +68,68 @@ const customUpload = async (uploadFileParams: any) => {
 </script>
 
 <template>
-  <div class="flex justify-end pb-3 pt-3">
-    <Upload
-      class="mr-2"
-      accept=".json"
-      :show-upload-list="false"
-      :custom-request="customUpload"
-    >
-      <Button size="small" type="primary">导入</Button>
-    </Upload>
-    <Select
-      class="mr-2"
-      size="small"
-      :dropdown-match-select-width="false"
-      :value="String(slotProps.value.year())"
-      @change="
-        (newYear) => {
-          slotProps.onChange(slotProps.value.year(newYear));
-        }
-      "
-    >
-      <SelectOption
-        v-for="val in getYears(slotProps.value)"
-        :key="String(val)"
-        class="year-item"
+  <div class="flex flex-col pb-3 pt-3 sm:flex-row">
+    <div class="flex flex-1 align-middle">
+      <ButtonGroup>
+        <Button type="primary" @click="adjustMonth(-1)">
+          <AntDesignLeftOutlined />
+        </Button>
+        <Button type="primary" @click="adjustMonth(1)">
+          <AntDesignRightOutlined />
+        </Button>
+      </ButtonGroup>
+      <Button class="ml-2" @click="gotoToday">今天</Button>
+    </div>
+    <div class="flex flex-1 justify-center align-middle">
+      <b class="text-lg">{{ yearMonth }}</b>
+    </div>
+    <div class="flex flex-1 justify-end align-middle">
+      <Upload
+        class="mr-2"
+        accept=".json"
+        :show-upload-list="false"
+        :custom-request="customUpload"
       >
-        {{ val }}
-      </SelectOption>
-    </Select>
-    <Select
-      size="small"
-      :dropdown-match-select-width="false"
-      :value="String(slotProps.value.month())"
-      @change="
-        (selectedMonth) => {
-          slotProps.onChange(
-            slotProps.value.month(parseInt(String(selectedMonth), 10)),
-          );
-        }
-      "
-    >
-      <SelectOption
-        v-for="(val, index) in getMonths(slotProps.value)"
-        :key="String(index)"
-        class="month-item"
+        <Button type="primary">导入</Button>
+      </Upload>
+      <Select
+        class="mr-2"
+        :dropdown-match-select-width="false"
+        :value="String(slotProps.value.year())"
+        @change="
+          (newYear) => {
+            slotProps.onChange(slotProps.value.year(newYear));
+          }
+        "
       >
-        {{ val }}
-      </SelectOption>
-    </Select>
+        <SelectOption
+          v-for="val in getYears(slotProps.value)"
+          :key="String(val)"
+          class="year-item"
+        >
+          {{ val }}
+        </SelectOption>
+      </Select>
+      <Select
+        :dropdown-match-select-width="false"
+        :value="String(slotProps.value.month())"
+        @change="
+          (selectedMonth) => {
+            slotProps.onChange(
+              slotProps.value.month(parseInt(String(selectedMonth), 10)),
+            );
+          }
+        "
+      >
+        <SelectOption
+          v-for="(val, index) in getMonths(slotProps.value)"
+          :key="String(index)"
+          class="month-item"
+        >
+          {{ val }}
+        </SelectOption>
+      </Select>
+    </div>
   </div>
 </template>
 
