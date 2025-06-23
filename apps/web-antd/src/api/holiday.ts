@@ -1,29 +1,17 @@
 import type { Recordable } from '@vben/types';
 
-import type { UploadFileParams } from '#/api/file';
-
 import { requestClient } from '#/api/request';
 
 async function listHoliday(params: Recordable<any>) {
   return requestClient.get<Array<string>>('/holiday', { params });
 }
 
-async function importHoliday({
-  file,
-  onError,
-  onProgress,
-  onSuccess,
-}: UploadFileParams) {
-  try {
-    onProgress?.({ percent: 0 });
-
-    const data = await requestClient.upload('/holiday/import', { file });
-
-    onProgress?.({ percent: 100 });
-    onSuccess?.(data, file);
-  } catch (error) {
-    onError?.(error instanceof Error ? error : new Error(String(error)));
-  }
+async function importHoliday(file: File) {
+  return requestClient.upload('/holiday/import', { file });
 }
 
-export { importHoliday, listHoliday };
+async function saveHoliday(date: string) {
+  return requestClient.post('/holiday', null, { params: { holiday: date } });
+}
+
+export { importHoliday, listHoliday, saveHoliday };

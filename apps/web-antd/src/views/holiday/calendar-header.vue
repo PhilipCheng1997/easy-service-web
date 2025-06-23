@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
 
-import { Button, Select, SelectOption, Upload } from 'ant-design-vue';
+import { Button, message, Select, SelectOption, Upload } from 'ant-design-vue';
 import { Dayjs } from 'dayjs';
 
 import { importHoliday } from '#/api/holiday';
@@ -32,6 +32,16 @@ const getYears = (value: Dayjs) => {
   }
   return years;
 };
+
+const customUpload = async (uploadFileParams: any) => {
+  try {
+    await importHoliday(uploadFileParams.file);
+    message.success('导入成功');
+  } catch (error) {
+    console.error('导入假期失败', error);
+    message.error('导入失败');
+  }
+};
 </script>
 
 <template>
@@ -40,7 +50,7 @@ const getYears = (value: Dayjs) => {
       class="mr-2"
       accept=".json"
       :show-upload-list="false"
-      :custom-request="importHoliday"
+      :custom-request="customUpload"
     >
       <Button size="small" type="primary">导入</Button>
     </Upload>
