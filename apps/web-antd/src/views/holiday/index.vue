@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
+import {
+  AntDesignCheckCircleFilled,
+  AntDesignClockCircleFilled,
+  AntDesignCloseCircleFilled,
+} from '@vben/icons';
 
 import { Calendar, Tag } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
@@ -10,8 +15,6 @@ import { listCalendarData } from '#/api/calendar';
 import { saveHoliday } from '#/api/holiday';
 
 import CalendarHeader from './calendar-header.vue';
-
-import { AntDesignCheckCircleFilled, AntDesignCloseCircleFilled, AntDesignClockCircleFilled } from "@vben/icons";
 
 const calendarDataMap = ref<any>({});
 const loadCalendarData = async (date: Dayjs = dayjs()) => {
@@ -30,7 +33,6 @@ const loadCalendarData = async (date: Dayjs = dayjs()) => {
     calendarDataMap.value[calendarData.date].push(calendarData);
   }
 };
-loadCalendarData();
 
 const value = ref<Dayjs>();
 const handleSelect = (value: Dayjs, { source }: any) => {
@@ -56,6 +58,10 @@ const handleSelect = (value: Dayjs, { source }: any) => {
     })
     .catch(() => {});
 };
+
+onMounted(() => {
+  loadCalendarData();
+});
 </script>
 
 <template>
@@ -69,7 +75,7 @@ const handleSelect = (value: Dayjs, { source }: any) => {
           <div v-if="calendarDataMap[current.format('YYYY-MM-DD')]">
             <Tag
               v-for="item in calendarDataMap[current.format('YYYY-MM-DD')]"
-              class="mb-1 block"
+              class="mb-1 mr-0 block flex items-center"
               :color="item.color"
               :key="item.date"
             >
@@ -78,7 +84,7 @@ const handleSelect = (value: Dayjs, { source }: any) => {
                 <AntDesignCloseCircleFilled v-if="item.color === 'error'" />
                 <AntDesignClockCircleFilled v-if="item.color === 'warning'" />
               </template>
-              {{ item.content }}
+              <span>{{ item.content }}</span>
             </Tag>
           </div>
         </template>

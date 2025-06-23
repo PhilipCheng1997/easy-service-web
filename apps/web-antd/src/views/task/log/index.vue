@@ -93,12 +93,13 @@ function openTaskPlanModal() {
           {{ taskPlan?.executableTime || '-' }}
         </DescriptionsItem>
         <DescriptionsItem v-if="taskPlan" label="执行状态" :span="4">
-          <Tag :color="taskPlan.isExecuted ? 'success' : 'warning'">
+          {{ taskPlan.latestSuccessful?.executeTime || '' }}
+          <Tag :color="taskPlan.latestSuccessful ? 'success' : 'warning'">
             {{
-              taskPlan.isExecuted
+              taskPlan.latestSuccessful
                 ? '已执行'
                 : taskPlan.isHoliday
-                  ? '跳过'
+                  ? '无需执行'
                   : '待执行'
             }}
           </Tag>
@@ -113,7 +114,7 @@ function openTaskPlanModal() {
           {{ taskPlan?.delayMinutes || '-' }}
         </DescriptionsItem>
         <DescriptionsItem label="output文件内容" :span="4">
-          {{ taskPlan?.output || '-' }}
+          {{ taskPlan?.latestSuccessful?.output || taskPlan?.output || '-' }}
         </DescriptionsItem>
       </Descriptions>
     </TaskPlanModal>
