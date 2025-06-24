@@ -3,7 +3,7 @@ import type { CalendarApi } from '#/api/calendar';
 
 import { onMounted, ref } from 'vue';
 
-import { confirm, Page } from '@vben/common-ui';
+import { confirm, Page, prompt } from '@vben/common-ui';
 
 import { Calendar } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
@@ -33,22 +33,29 @@ const handleSelect = (value: Dayjs, { source }: any) => {
     return;
   }
   const date = value?.format('YYYY-MM-DD');
-  const confirmContent = calendarDataList.value.some(
+  const isDelete = calendarDataList.value.some(
     (item: any) => item.type === 'error' && item.date === date,
-  )
+  );
+  const content = isDelete
     ? `确定要删除休假日期${date}？`
     : `确定要指定日期${date}为休假日期？`;
-  confirm({
-    centered: false,
-    content: confirmContent,
-    icon: 'question',
-  })
-    .then(() => {
-      saveHoliday(date).then(() => {
-        loadCalendarData(value);
-      });
-    })
-    .catch(() => {});
+  if (isDelete) {
+    confirm({ content })
+      .then(() => {
+        saveHoliday({ date }).then(() => {
+          loadCalendarData(value);
+        });
+      })
+      .catch(() => {});
+  } else {
+    prompt({ content, componentProps: { placeholder: '请输入备注' } })
+      .then((v) => {
+        saveHoliday({ date, remark: v }).then(() => {
+          loadCalendarData(value);
+        });
+      })
+      .catch(() => {});
+  }
 };
 
 onMounted(() => {
