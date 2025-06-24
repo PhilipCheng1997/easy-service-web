@@ -28,7 +28,12 @@ const dateStr = computed(() => {
 <template>
   <ul class="events" v-if="dateStr && calendarDataMap[dateStr]">
     <li v-for="item in calendarDataMap[dateStr]" :key="item.content">
-      <Badge :status="item.type" :text="item.content" />
+      <Badge :status="item.type">
+        <template #text>
+          <span v-if="item.time" class="mr-1">{{ item.time }}</span>
+          <span class="font-bold">{{ item.content }}</span>
+        </template>
+      </Badge>
     </li>
   </ul>
 </template>

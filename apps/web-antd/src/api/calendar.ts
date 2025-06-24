@@ -3,6 +3,7 @@ import { requestClient } from '#/api/request';
 export namespace CalendarApi {
   export interface CalendarData {
     date: string;
+    time?: string;
     content: string;
     type?:
       | 'default'
