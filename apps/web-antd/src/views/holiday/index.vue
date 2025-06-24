@@ -58,7 +58,7 @@ onMounted(() => {
 
 <template>
   <Page auto-content-height>
-    <div class="bg-background p-5">
+    <div class="bg-background p-5 min-w-[800px]">
       <Calendar v-model:value="value" @select="handleSelect">
         <template #headerRender="slotProps">
           <CalendarHeader :slot-props="slotProps" />
