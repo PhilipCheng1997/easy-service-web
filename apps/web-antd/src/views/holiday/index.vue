@@ -34,7 +34,7 @@ const handleSelect = (value: Dayjs, { source }: any) => {
   }
   const date = value?.format('YYYY-MM-DD');
   const confirmContent = calendarDataList.value.some(
-    (item: any) => item.color === 'error' && item.date === date,
+    (item: any) => item.type === 'error' && item.date === date,
   )
     ? `确定要删除休假日期${date}？`
     : `确定要指定日期${date}为休假日期？`;
@@ -58,7 +58,7 @@ onMounted(() => {
 
 <template>
   <Page auto-content-height>
-    <div class="bg-background p-5 min-w-[800px]">
+    <div class="bg-background min-w-[800px] p-5">
       <Calendar v-model:value="value" @select="handleSelect">
         <template #headerRender="slotProps">
           <CalendarHeader :slot-props="slotProps" />

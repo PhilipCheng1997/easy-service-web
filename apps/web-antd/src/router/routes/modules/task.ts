@@ -6,20 +6,11 @@ const routes: RouteRecordRaw[] = [
       icon: 'ic:baseline-view-in-ar',
       keepAlive: true,
       order: 1000,
-      title: '任务管理',
+      title: '任务日志',
     },
     name: 'Task',
-    path: '/task',
-    children: [
-      {
-        meta: {
-          title: '任务日志',
-        },
-        name: 'TaskLogs',
-        path: '/task/index',
-        component: () => import('#/views/task/log/index.vue'),
-      },
-    ],
+    path: '/task/index',
+    component: () => import('#/views/task/log/index.vue'),
   },
 ];
 
