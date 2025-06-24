@@ -1,37 +1,29 @@
 <script setup lang="ts">
+import type { CalendarApi } from '#/api/calendar';
+
 import { onMounted, ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
-import {
-  AntDesignCheckCircleFilled,
-  AntDesignClockCircleFilled,
-  AntDesignCloseCircleFilled,
-} from '@vben/icons';
 
-import { Calendar, Tag } from 'ant-design-vue';
+import { Calendar } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
 
 import { listCalendarData } from '#/api/calendar';
 import { saveHoliday } from '#/api/holiday';
 
 import CalendarHeader from './calendar-header.vue';
+import DateCell from './date-cell.vue';
 
-const calendarDataMap = ref<any>({});
-const loadCalendarData = async (date: Dayjs = dayjs()) => {
-  calendarDataMap.value = {};
+const calendarDataList = ref<Array<CalendarApi.CalendarData>>([]);
+const loadCalendarData = (date: Dayjs = dayjs()) => {
   const startDate = date
     .subtract(1, 'month')
     .startOf('month')
     .format('YYYY-MM-DD');
   const endDate = date.add(1, 'month').endOf('month').format('YYYY-MM-DD');
-  const calendarDataList = await listCalendarData({ startDate, endDate });
-  for (const i in calendarDataList) {
-    const calendarData = calendarDataList[i];
-    if (!calendarDataMap.value[calendarData.date]) {
-      calendarDataMap.value[calendarData.date] = [];
-    }
-    calendarDataMap.value[calendarData.date].push(calendarData);
-  }
+  listCalendarData({ startDate, endDate }).then(
+    (data) => (calendarDataList.value = data),
+  );
 };
 
 const value = ref<Dayjs>();
@@ -41,8 +33,8 @@ const handleSelect = (value: Dayjs, { source }: any) => {
     return;
   }
   const date = value?.format('YYYY-MM-DD');
-  const confirmContent = calendarDataMap.value[date]?.find(
-    (item: any) => item.color === 'error',
+  const confirmContent = calendarDataList.value.some(
+    (item: any) => item.color === 'error' && item.date === date,
   )
     ? `确定要删除休假日期${date}？`
     : `确定要指定日期${date}为休假日期？`;
@@ -72,21 +64,7 @@ onMounted(() => {
           <CalendarHeader :slot-props="slotProps" />
         </template>
         <template #dateCellRender="{ current }">
-          <div v-if="calendarDataMap[current.format('YYYY-MM-DD')]">
-            <Tag
-              v-for="item in calendarDataMap[current.format('YYYY-MM-DD')]"
-              class="mb-1 mr-0 block flex items-center"
-              :color="item.color"
-              :key="item.date"
-            >
-              <template #icon>
-                <AntDesignCheckCircleFilled v-if="item.color === 'success'" />
-                <AntDesignCloseCircleFilled v-if="item.color === 'error'" />
-                <AntDesignClockCircleFilled v-if="item.color === 'warning'" />
-              </template>
-              <span>{{ item.content }}</span>
-            </Tag>
-          </div>
+          <DateCell :current="current" :calendar-data-list="calendarDataList" />
         </template>
       </Calendar>
     </div>
