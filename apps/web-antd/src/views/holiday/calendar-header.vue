@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineProps } from 'vue';
+import {computed, defineProps, toRefs} from 'vue';
 
 import { AntDesignLeftOutlined, AntDesignRightOutlined } from '@vben/icons';
 
@@ -24,8 +24,24 @@ const props = defineProps({
   },
 });
 
+const months = [
+  '一',
+  '二',
+  '三',
+  '四',
+  '五',
+  '六',
+  '七',
+  '八',
+  '九',
+  '十',
+  '十一',
+  '十二',
+];
 const yearMonth = computed(() => {
-  return props.slotProps.value.format('YYYY-MM');
+  return `${props.slotProps.value.format('YYYY')}年 ${
+    months[props.slotProps.value.month()]
+  }月`;
 });
 
 const getMonths = (value: Dayjs) => {
@@ -68,7 +84,7 @@ const customUpload = async (uploadFileParams: any) => {
 </script>
 
 <template>
-  <div class="flex flex-col pb-3 pt-3 sm:flex-row">
+  <div class="grid grid-cols-3 pb-3 pt-3">
     <div class="flex flex-1 align-middle">
       <ButtonGroup>
         <Button type="primary" @click="adjustMonth(-1)">

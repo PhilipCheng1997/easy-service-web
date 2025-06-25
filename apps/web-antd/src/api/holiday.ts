@@ -16,7 +16,11 @@ async function importHoliday(file: File) {
 }
 
 async function saveHoliday(data: HolidayData) {
-  return requestClient.post('/holiday', data);
+  return requestClient.put('/holiday', data);
 }
 
-export { importHoliday, listHoliday, saveHoliday };
+async function deleteHoliday(date: string) {
+  return requestClient.delete('/holiday', { params: { date } });
+}
+
+export { deleteHoliday, importHoliday, listHoliday, saveHoliday };
