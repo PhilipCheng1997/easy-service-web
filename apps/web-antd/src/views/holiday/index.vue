@@ -88,7 +88,10 @@ onMounted(() => {
   loadCalendarData();
 });
 
-watch(() => value.value?.month(), () => loadCalendarData(value.value));
+watch(
+  () => value.value?.month(),
+  () => loadCalendarData(value.value),
+);
 </script>
 
 <template>
