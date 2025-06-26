@@ -94,7 +94,6 @@ function handleExecuteTask() {
       }
       gridApi.reload();
     })
-    .catch(() => message.error('执行失败'))
     .finally(() => (loading.value = false));
 }
 </script>
