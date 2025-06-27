@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, defineProps, toRefs} from 'vue';
+import { computed, defineProps } from 'vue';
 
 import { AntDesignLeftOutlined, AntDesignRightOutlined } from '@vben/icons';
 

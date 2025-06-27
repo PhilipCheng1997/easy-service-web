@@ -97,6 +97,12 @@ const columns = [
     slots: { default: 'error' },
     minWidth: 110,
   },
+  {
+    field: 'isNotified',
+    title: '是否已通知',
+    slots: { default: 'isNotified' },
+    minWidth: 110,
+  },
 ];
 
 export { columns, formSchema };

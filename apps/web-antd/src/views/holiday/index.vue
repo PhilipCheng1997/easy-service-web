@@ -132,8 +132,9 @@ watch(
 
 <style lang="scss" scoped>
 .ant-picker-calendar-date-today {
-  background: rgba(255, 220, 40, 0.15);
+  background: rgb(255 220 40 / 15%);
 }
+
 .disabled-cell {
   background: #f4f4f4b8;
 }

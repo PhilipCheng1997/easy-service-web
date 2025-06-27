@@ -27,16 +27,16 @@ defineProps<{
 
 <style scoped lang="scss">
 .events {
-  list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  list-style: none;
 
   .ant-badge-status {
-    overflow: hidden;
-    white-space: nowrap;
     width: 100%;
+    overflow: hidden;
     text-overflow: ellipsis;
     font-size: 12px;
+    white-space: nowrap;
   }
 }
 </style>

@@ -17,6 +17,7 @@ export namespace TaskApi {
     output?: string;
     scriptOutput?: string;
     startTime?: string;
+    isNotified?: number;
   }
 }
 

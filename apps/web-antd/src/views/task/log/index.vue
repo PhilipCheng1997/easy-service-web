@@ -176,6 +176,11 @@ function handleExecuteTask() {
             查看
           </Button>
         </template>
+        <template #isNotified="{ row }">
+          <span v-if="!row.isExecuted || row.isNotified === -1">无需执行</span>
+          <span v-else-if="row.isNotified === 1">已执行</span>
+          <span v-else>待执行</span>
+        </template>
         <template #toolbar-tools>
           <Button type="primary" class="mr-1" @click="handleExecuteTask">
             立即执行
