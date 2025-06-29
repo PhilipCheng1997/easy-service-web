@@ -12,7 +12,7 @@ function useAccess() {
 
   /**
    * 基于角色判断是否有权限
-   * @description: Determine whether there is permission，The role is judged by the user's role
+   * @description: Determine whether there is menu，The role is judged by the user's role
    * @param roles
    */
   function hasAccessByRoles(roles: string[]) {
@@ -23,7 +23,7 @@ function useAccess() {
 
   /**
    * 基于权限码判断是否有权限
-   * @description: Determine whether there is permission，The permission code is judged by the user's permission code
+   * @description: Determine whether there is menu，The menu code is judged by the user's menu code
    * @param codes
    */
   function hasAccessByCodes(codes: string[]) {
