@@ -85,25 +85,6 @@ const basicGroup: VbenFormSchema[] = [
     },
   },
   {
-    component: 'AutoComplete',
-    componentProps: {
-      allowClear: true,
-      class: 'w-full',
-      filterOption(input: string, option: { value: string }) {
-        return option.value.toLowerCase().includes(input.toLowerCase());
-      },
-      options: componentKeys.map((v) => ({ value: v })),
-    },
-    dependencies: {
-      show: (values) => {
-        return values.type === MenuApi.MenuType.MENU;
-      },
-      triggerFields: ['type'],
-    },
-    fieldName: 'component',
-    label: '路由组件',
-  },
-  {
     component: 'Input',
     fieldName: 'path',
     label: '菜单路径',
@@ -113,6 +94,12 @@ const basicGroup: VbenFormSchema[] = [
     fieldName: 'meta.activePath',
     label: '激活路径',
     help: '当前激活的菜单，有时候不想激活现有菜单，需要激活父级菜单时使用',
+    dependencies: {
+      show: (values) => {
+        return values.type !== MenuApi.MenuType.CATALOG;
+      },
+      triggerFields: ['type'],
+    },
   },
   {
     component: 'InputNumber',
@@ -131,6 +118,26 @@ const basicGroup: VbenFormSchema[] = [
       },
       triggerFields: ['type'],
     },
+  },
+  {
+    component: 'AutoComplete',
+    componentProps: {
+      allowClear: true,
+      class: 'w-full',
+      filterOption(input: string, option: { value: string }) {
+        return option.value.toLowerCase().includes(input.toLowerCase());
+      },
+      options: componentKeys.map((v) => ({ value: v })),
+      placeholder: '请选择路由组件',
+    },
+    dependencies: {
+      show: (values) => {
+        return values.type === MenuApi.MenuType.MENU;
+      },
+      triggerFields: ['type'],
+    },
+    fieldName: 'component',
+    label: '路由组件',
   },
 ];
 const iconGroup: VbenFormSchema[] = [

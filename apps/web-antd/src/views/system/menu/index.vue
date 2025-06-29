@@ -12,7 +12,7 @@ import { MenuBadge } from '@vben-core/menu-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getMenuTree } from '#/api/system';
+import { getMenuTree, MenuApi } from '#/api/system';
 
 import { useColumns } from './data';
 
@@ -47,8 +47,8 @@ const [Grid] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function handleEdit() {
-  router.push({ path: '/system/menu/edit' });
+function handleEdit(row: MenuApi.SysMenu) {
+  router.push({ path: `/system/menu/edit/${row.id}` });
 }
 </script>
 

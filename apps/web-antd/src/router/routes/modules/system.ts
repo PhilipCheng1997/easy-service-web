@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         name: 'EditSystemMenu',
-        path: 'edit',
+        path: 'edit/:id',
         component: () => import('#/views/system/menu/component/form.vue'),
         meta: {
           title: '修改菜单',
