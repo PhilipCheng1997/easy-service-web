@@ -47,8 +47,12 @@ const [Grid] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function handleEdit(row: MenuApi.SysMenu) {
-  router.push({ path: `/system/menu/edit/${row.id}` });
+function gotoForm(row: MenuApi.SysMenu) {
+  if (row) {
+    router.push({ path: `/system/menu/edit/${row.id}` });
+  } else {
+    router.push({ path: '/system/menu/add' });
+  }
 }
 </script>
 
@@ -56,10 +60,10 @@ function handleEdit(row: MenuApi.SysMenu) {
   <Page auto-content-height>
     <Grid table-title="菜单管理">
       <template #operation="{ row }">
-        <Button type="link" @click="handleEdit(row)">编辑</Button>
+        <Button type="link" @click="gotoForm(row)">编辑</Button>
       </template>
       <template #toolbar-tools>
-        <Button type="primary">添加菜单</Button>
+        <Button type="primary" @click="gotoForm()">添加菜单</Button>
       </template>
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">

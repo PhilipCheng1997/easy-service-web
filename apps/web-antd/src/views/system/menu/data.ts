@@ -8,138 +8,203 @@ import { h } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
-import { getMenuTree, MenuApi } from '#/api/system';
+import { useDebounceFn } from '@vueuse/core';
+
+import { z } from '#/adapter/form';
+import {
+  checkMenuNameUnique,
+  checkMenuPathUnique,
+  getMenuTree,
+  MenuApi,
+} from '#/api/system';
 import { componentKeys } from '#/router/routes';
 
-const basicGroup: VbenFormSchema[] = [
-  {
-    component: 'FormGroupTitle',
-    componentProps: {
-      title: '基本信息',
+const debouncedCheckMenuNameUnique = useDebounceFn((value, id, callback) => {
+  checkMenuNameUnique(value, id).then(callback);
+}, 300);
+function checkMenuNameUniqueDebounced(value: string, id: number | undefined) {
+  return new Promise((resolve) => {
+    debouncedCheckMenuNameUnique(value, id, resolve);
+  });
+}
+
+const debouncedCheckMenuPathUnique = useDebounceFn((value, id, callback) => {
+  checkMenuPathUnique(value, id).then(callback);
+}, 300);
+function checkMenuPathUniqueDebounced(value: string, id: number | undefined) {
+  return new Promise((resolve) => {
+    debouncedCheckMenuPathUnique(value, id, resolve);
+  });
+}
+
+const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
+  return [
+    {
+      component: 'FormGroupTitle',
+      componentProps: {
+        title: '基本信息',
+      },
+      fieldName: 'basicGroup',
+      formItemClass: 'col-span-2 md:col-span-2 pb-4',
     },
-    fieldName: 'basicGroup',
-    formItemClass: 'col-span-2 md:col-span-2 pb-4',
-  },
-  {
-    component: 'RadioGroup',
-    fieldName: 'type',
-    label: '菜单类型',
-    componentProps: {
-      buttonStyle: 'solid',
-      options: getMenuTypeOptions(),
-      optionType: 'button',
+    {
+      component: 'RadioGroup',
+      fieldName: 'type',
+      label: '菜单类型',
+      componentProps: {
+        buttonStyle: 'solid',
+        options: getMenuTypeOptions(),
+        optionType: 'button',
+      },
+      defaultValue: 2,
+      rules: 'selectRequired',
     },
-    defaultValue: 2,
-    rules: 'selectRequired',
-  },
-  {
-    component: 'RadioGroup',
-    componentProps: {
-      buttonStyle: 'solid',
-      options: [
-        { label: '启用', value: true },
-        { label: '禁用', value: false },
-      ],
-      optionType: 'button',
+    {
+      component: 'RadioGroup',
+      componentProps: {
+        buttonStyle: 'solid',
+        options: [
+          { label: '启用', value: true },
+          { label: '禁用', value: false },
+        ],
+        optionType: 'button',
+      },
+      defaultValue: false,
+      fieldName: 'enableFlag',
+      label: '启用状态',
     },
-    defaultValue: false,
-    fieldName: 'enableFlag',
-    label: '启用状态',
-  },
-  {
-    component: 'Input',
-    fieldName: 'name',
-    label: '菜单标识',
-    rules: 'required',
-  },
-  {
-    component: 'Input',
-    fieldName: 'meta.title',
-    label: '菜单标题',
-    rules: 'required',
-  },
-  {
-    component: 'ApiTreeSelect',
-    fieldName: 'pid',
-    label: '父级菜单',
-    componentProps: {
-      api: getMenuTree,
-      allowClear: true,
-      treeDefaultExpandAll: true,
-      valueField: 'id',
-      childrenField: 'children',
-      labelField: 'meta.title',
+    {
+      component: 'Input',
+      fieldName: 'name',
+      label: '菜单标识',
+      rules: z
+        .string()
+        .min(2, '菜单标识最少2个字符')
+        .max(30, '菜单标识最多30个字符')
+        .refine(async (v) => {
+          return await checkMenuNameUniqueDebounced(v, id);
+        }, '菜单标识已存在'),
+      formFieldProps: {
+        validateOnChange: false,
+        validateOnModelUpdate: false,
+        validateOnInput: false,
+      },
     },
-    renderComponentContent() {
-      return {
-        title({ label, meta }: { label: string; meta: Recordable<any> }) {
-          const coms = [];
-          if (!label) return '';
-          if (meta?.icon) {
-            coms.push(h(IconifyIcon, { class: 'size-4', icon: meta.icon }));
-          }
-          coms.push(h('span', { class: '' }, $t(label || '')));
-          return h('div', { class: 'flex items-center gap-1' }, coms);
+    {
+      component: 'Input',
+      fieldName: 'meta.title',
+      label: '菜单标题',
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'path',
+      label: '菜单路径',
+      dependencies: {
+        show: (values) => {
+          return [
+            MenuApi.MenuType.CATALOG,
+            MenuApi.MenuType.EMBEDDED,
+            MenuApi.MenuType.MENU,
+          ].includes(values.type);
         },
-      };
-    },
-  },
-  {
-    component: 'Input',
-    fieldName: 'path',
-    label: '菜单路径',
-  },
-  {
-    component: 'Input',
-    fieldName: 'meta.activePath',
-    label: '激活路径',
-    help: '当前激活的菜单，有时候不想激活现有菜单，需要激活父级菜单时使用',
-    dependencies: {
-      show: (values) => {
-        return values.type !== MenuApi.MenuType.CATALOG;
+        triggerFields: ['type'],
       },
-      triggerFields: ['type'],
+      rules: z
+        .string()
+        .min(2, '菜单路径最少2个字符')
+        .refine(async (v) => {
+          return await checkMenuPathUniqueDebounced(v, id);
+        }, '菜单路径已存在'),
     },
-  },
-  {
-    component: 'InputNumber',
-    fieldName: 'meta.order',
-    label: '排序',
-  },
-  {
-    component: 'Input',
-    fieldName: 'linkSrc',
-    label: '链接地址',
-    dependencies: {
-      show: (values) => {
-        return [MenuApi.MenuType.EMBEDDED, MenuApi.MenuType.LINK].includes(
-          values.type,
-        );
+    {
+      component: 'Input',
+      fieldName: 'meta.activePath',
+      label: '激活路径',
+      help: '当前激活的菜单，有时候不想激活现有菜单，需要激活父级菜单时使用',
+      dependencies: {
+        show: (values) => {
+          return [MenuApi.MenuType.EMBEDDED, MenuApi.MenuType.MENU].includes(
+            values.type,
+          );
+        },
+        triggerFields: ['type'],
       },
-      triggerFields: ['type'],
+      rules: z
+        .string()
+        .min(2, '菜单路径最少2个字符')
+        .refine(async (v) => {
+          return !(await checkMenuPathUniqueDebounced(v, id));
+        }, '菜单路径不存在')
+        .optional(),
     },
-  },
-  {
-    component: 'AutoComplete',
-    componentProps: {
-      allowClear: true,
-      class: 'w-full',
-      filterOption(input: string, option: { value: string }) {
-        return option.value.toLowerCase().includes(input.toLowerCase());
+    {
+      component: 'ApiTreeSelect',
+      fieldName: 'pid',
+      label: '父级菜单',
+      componentProps: {
+        api: getMenuTree,
+        allowClear: true,
+        treeDefaultExpandAll: true,
+        valueField: 'id',
+        childrenField: 'children',
+        labelField: 'meta.title',
       },
-      options: componentKeys.map((v) => ({ value: v })),
-      placeholder: '请选择路由组件',
-    },
-    dependencies: {
-      show: (values) => {
-        return values.type === MenuApi.MenuType.MENU;
+      renderComponentContent() {
+        return {
+          title({ label, meta }: { label: string; meta: Recordable<any> }) {
+            const coms = [];
+            if (!label) return '';
+            if (meta?.icon) {
+              coms.push(h(IconifyIcon, { class: 'size-4', icon: meta.icon }));
+            }
+            coms.push(h('span', { class: '' }, $t(label || '')));
+            return h('div', { class: 'flex items-center gap-1' }, coms);
+          },
+        };
       },
-      triggerFields: ['type'],
     },
-    fieldName: 'component',
-    label: '路由组件',
-  },
-];
+    {
+      component: 'Input',
+      fieldName: 'linkSrc',
+      label: '链接地址',
+      dependencies: {
+        show: (values) => {
+          return [MenuApi.MenuType.EMBEDDED, MenuApi.MenuType.LINK].includes(
+            values.type,
+          );
+        },
+        triggerFields: ['type'],
+      },
+      rules: z.string().url('请输入有效的链接地址'),
+    },
+    {
+      component: 'AutoComplete',
+      componentProps: {
+        allowClear: true,
+        class: 'w-full',
+        filterOption(input: string, option: { value: string }) {
+          return option.value.toLowerCase().includes(input.toLowerCase());
+        },
+        options: componentKeys.map((v) => ({ value: v })),
+        placeholder: '请选择路由组件',
+      },
+      dependencies: {
+        show: (values) => {
+          return values.type === MenuApi.MenuType.MENU;
+        },
+        triggerFields: ['type'],
+      },
+      fieldName: 'component',
+      label: '路由组件',
+    },
+    {
+      component: 'InputNumber',
+      fieldName: 'meta.order',
+      label: '排序',
+    },
+  ];
+};
 const iconGroup: VbenFormSchema[] = [
   {
     component: 'FormGroupTitle',
@@ -158,6 +223,12 @@ const iconGroup: VbenFormSchema[] = [
     component: 'IconPicker',
     label: '激活图标',
     fieldName: 'meta.activeIcon',
+    dependencies: {
+      show: (values) => {
+        return values.type !== MenuApi.MenuType.LINK;
+      },
+      triggerFields: ['type'],
+    },
   },
 ];
 const badgeGroup: VbenFormSchema[] = [
@@ -310,8 +381,8 @@ const displayGroup: VbenFormSchema[] = [
   },
 ];
 
-export function useSchema(): VbenFormSchema[] {
-  return [...basicGroup, ...iconGroup, ...badgeGroup, ...displayGroup];
+export function useSchema(id: number | undefined): VbenFormSchema[] {
+  return [...getBasicGroup(id), ...iconGroup, ...badgeGroup, ...displayGroup];
 }
 
 export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
