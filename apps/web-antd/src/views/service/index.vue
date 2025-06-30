@@ -25,7 +25,7 @@ const [Grid] = useVbenVxeGrid({
           name: 'CellTag',
           options: [
             { value: true, label: '上线', color: 'success' },
-            { value: false, label: '下线', color: 'info' },
+            { value: false, label: '下线' },
           ],
         },
         field: 'isOnline',

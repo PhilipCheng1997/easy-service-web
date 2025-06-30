@@ -21,6 +21,7 @@ export namespace MenuApi {
   export const BadgeTypes = ['dot', 'normal'] as const;
 
   export interface SysMenu {
+    [key: string]: any;
     id: number;
     pid: number;
     name: string;
@@ -28,7 +29,7 @@ export namespace MenuApi {
     redirect?: string;
     component?: string;
     enableFlag?: boolean;
-    menuType: MenuType;
+    type: MenuType;
     /** 菜单元数据 */
     meta?: {
       /** 激活时显示的图标 */
@@ -81,4 +82,20 @@ async function getMenuTree() {
   return requestClient.get<MenuApi.SysMenu>('/system/menu');
 }
 
-export { getMenuTree };
+async function checkMenuNameUnique(menuName: string, menuId?: number) {
+  return requestClient.get<boolean>('/system/menu/check-name', {
+    params: { menuName, menuId },
+  });
+}
+
+async function checkMenuPathUnique(menuPath: string, menuId?: number) {
+  return requestClient.get<boolean>('/system/menu/check-path', {
+    params: { menuPath, menuId },
+  });
+}
+
+async function getMenu(menuId: number) {
+  return requestClient.get<MenuApi.SysMenu>(`/system/menu/${menuId}`);
+}
+
+export { checkMenuNameUnique, checkMenuPathUnique, getMenu, getMenuTree };
