@@ -5,9 +5,10 @@ import { useRoute, useRouter } from 'vue-router';
 import { Page } from '@vben/common-ui';
 
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
+import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { getMenu, MenuApi } from '#/api/system';
+import { addMenu, getMenu, MenuApi, updateMenu } from '#/api/system';
 
 import { useSchema } from '../data';
 
@@ -45,22 +46,30 @@ const [Form, formApi] = useVbenForm({
 });
 
 async function handleSubmit() {
-  const { valid } = await formApi.validate();
-  if (valid) {
-    const data =
-      await formApi.getValues<
-        Omit<
-          MenuApi.SysMenu,
-          'badgeGroup' | 'basicGroup' | 'displayGroup' | 'iconGroup'
-        >
-      >();
-    if (data.type === MenuApi.MenuType.LINK) {
-      data.meta = { ...data.meta, link: data.linkSrc };
-    } else if (data.type === MenuApi.MenuType.EMBEDDED) {
-      data.meta = { ...data.meta, iframeSrc: data.linkSrc };
+  loading.value = true;
+  try {
+    const { valid } = await formApi.validate();
+    if (valid) {
+      const data = await formApi.getValues<MenuApi.SysMenu>();
+      if (data.type === MenuApi.MenuType.LINK) {
+        data.meta = { ...data.meta, link: data.linkSrc };
+      } else if (data.type === MenuApi.MenuType.EMBEDDED) {
+        data.meta = { ...data.meta, iframeSrc: data.linkSrc };
+      }
+      delete data.linkSrc;
+
+      if (menuId.value) {
+        data.id = menuId.value;
+        await updateMenu(data);
+        message.success('更新成功');
+      } else {
+        await addMenu(data);
+        message.success('添加成功');
+      }
+      router.go(-1);
     }
-    delete data.linkSrc;
-    console.log(data);
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -69,6 +78,9 @@ onMounted(() => {
     loading.value = true;
     getMenu(menuId.value)
       .then((m) => {
+        if (m.pid === 0) {
+          m.pid = undefined;
+        }
         formApi.setValues(m);
       })
       .finally(() => (loading.value = false));

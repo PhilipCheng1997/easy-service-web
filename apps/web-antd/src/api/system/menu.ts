@@ -23,7 +23,7 @@ export namespace MenuApi {
   export interface SysMenu {
     [key: string]: any;
     id: number;
-    pid: number;
+    pid?: number;
     name: string;
     path?: string;
     redirect?: string;
@@ -98,4 +98,19 @@ async function getMenu(menuId: number) {
   return requestClient.get<MenuApi.SysMenu>(`/system/menu/${menuId}`);
 }
 
-export { checkMenuNameUnique, checkMenuPathUnique, getMenu, getMenuTree };
+async function addMenu(menu: MenuApi.SysMenu) {
+  return requestClient.post<MenuApi.SysMenu>('/system/menu', menu);
+}
+
+async function updateMenu(menu: MenuApi.SysMenu) {
+  return requestClient.put<MenuApi.SysMenu>('/system/menu', menu);
+}
+
+export {
+  addMenu,
+  checkMenuNameUnique,
+  checkMenuPathUnique,
+  getMenu,
+  getMenuTree,
+  updateMenu,
+};

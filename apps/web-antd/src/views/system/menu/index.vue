@@ -47,7 +47,7 @@ const [Grid] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function gotoForm(row: MenuApi.SysMenu) {
+function gotoForm(row: MenuApi.SysMenu | null) {
   if (row) {
     router.push({ path: `/system/menu/edit/${row.id}` });
   } else {
@@ -63,7 +63,7 @@ function gotoForm(row: MenuApi.SysMenu) {
         <Button type="link" @click="gotoForm(row)">编辑</Button>
       </template>
       <template #toolbar-tools>
-        <Button type="primary" @click="gotoForm()">添加菜单</Button>
+        <Button type="primary" @click="gotoForm(null)">添加菜单</Button>
       </template>
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">

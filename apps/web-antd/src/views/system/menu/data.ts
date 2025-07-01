@@ -130,39 +130,7 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
         },
         triggerFields: ['type'],
       },
-      rules: z
-        .string()
-        .min(2, '菜单路径最少2个字符')
-        .refine(async (v) => {
-          return !(await checkMenuPathUniqueDebounced(v, id));
-        }, '菜单路径不存在')
-        .optional(),
-    },
-    {
-      component: 'ApiTreeSelect',
-      fieldName: 'pid',
-      label: '父级菜单',
-      componentProps: {
-        api: getMenuTree,
-        allowClear: true,
-        treeDefaultExpandAll: true,
-        valueField: 'id',
-        childrenField: 'children',
-        labelField: 'meta.title',
-      },
-      renderComponentContent() {
-        return {
-          title({ label, meta }: { label: string; meta: Recordable<any> }) {
-            const coms = [];
-            if (!label) return '';
-            if (meta?.icon) {
-              coms.push(h(IconifyIcon, { class: 'size-4', icon: meta.icon }));
-            }
-            coms.push(h('span', { class: '' }, $t(label || '')));
-            return h('div', { class: 'flex items-center gap-1' }, coms);
-          },
-        };
-      },
+      rules: z.string().min(2, '菜单路径最少2个字符').nullable().optional(),
     },
     {
       component: 'Input',
@@ -179,6 +147,33 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
       rules: z.string().url('请输入有效的链接地址'),
     },
     {
+      component: 'ApiTreeSelect',
+      fieldName: 'pid',
+      label: '父级菜单',
+      componentProps: {
+        api: getMenuTree,
+        allowClear: true,
+        treeDefaultExpandAll: true,
+        valueField: 'id',
+        childrenField: 'children',
+        labelField: 'meta.title',
+        placeholder: '请选择父级菜单',
+      },
+      renderComponentContent() {
+        return {
+          title({ label, meta }: { label: string; meta: Recordable<any> }) {
+            const coms = [];
+            if (!label) return '';
+            if (meta?.icon) {
+              coms.push(h(IconifyIcon, { class: 'size-4', icon: meta.icon }));
+            }
+            coms.push(h('span', { class: '' }, $t(label || '')));
+            return h('div', { class: 'flex items-center gap-1' }, coms);
+          },
+        };
+      },
+    },
+    {
       component: 'AutoComplete',
       componentProps: {
         allowClear: true,
@@ -187,7 +182,7 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
           return option.value.toLowerCase().includes(input.toLowerCase());
         },
         options: componentKeys.map((v) => ({ value: v })),
-        placeholder: '请选择路由组件',
+        placeholder: '请选择页面组件',
       },
       dependencies: {
         show: (values) => {
@@ -195,8 +190,9 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
         },
         triggerFields: ['type'],
       },
+      rules: 'required',
       fieldName: 'component',
-      label: '路由组件',
+      label: '页面组件',
     },
     {
       component: 'InputNumber',
@@ -286,7 +282,7 @@ const displayGroup: VbenFormSchema[] = [
     formItemClass: 'col-span-2 md:col-span-2 pt-4 pb-4',
   },
   {
-    component: 'RadioGroup',
+    component: 'Checkbox',
     componentProps: {
       buttonStyle: 'solid',
       options: [
@@ -295,12 +291,11 @@ const displayGroup: VbenFormSchema[] = [
       ],
       optionType: 'button',
     },
-    defaultValue: false,
     fieldName: 'meta.hideInMenu',
-    label: '在菜单中隐藏',
+    label: '不在菜单中显示',
   },
   {
-    component: 'RadioGroup',
+    component: 'Checkbox',
     componentProps: {
       buttonStyle: 'solid',
       options: [
@@ -309,12 +304,11 @@ const displayGroup: VbenFormSchema[] = [
       ],
       optionType: 'button',
     },
-    defaultValue: false,
     fieldName: 'meta.hideInTab',
-    label: '在标签页中隐藏',
+    label: '不在标签页中显示',
   },
   {
-    component: 'RadioGroup',
+    component: 'Checkbox',
     componentProps: {
       buttonStyle: 'solid',
       options: [
@@ -323,12 +317,11 @@ const displayGroup: VbenFormSchema[] = [
       ],
       optionType: 'button',
     },
-    defaultValue: false,
     fieldName: 'meta.hideInBreadcrumb',
-    label: '在面包屑中隐藏',
+    label: '不在面包屑中显示',
   },
   {
-    component: 'RadioGroup',
+    component: 'Checkbox',
     componentProps: {
       buttonStyle: 'solid',
       options: [
@@ -337,12 +330,11 @@ const displayGroup: VbenFormSchema[] = [
       ],
       optionType: 'button',
     },
-    defaultValue: false,
     fieldName: 'meta.hideChildrenInMenu',
-    label: '子页面在菜单中隐藏',
+    label: '子菜单不在菜单中显示',
   },
   {
-    component: 'RadioGroup',
+    component: 'Checkbox',
     componentProps: {
       buttonStyle: 'solid',
       options: [
@@ -351,12 +343,11 @@ const displayGroup: VbenFormSchema[] = [
       ],
       optionType: 'button',
     },
-    defaultValue: false,
     fieldName: 'meta.openInNewWindow',
     label: '是否新窗口打开',
   },
   {
-    component: 'RadioGroup',
+    component: 'Checkbox',
     componentProps: {
       buttonStyle: 'solid',
       options: [
@@ -365,7 +356,6 @@ const displayGroup: VbenFormSchema[] = [
       ],
       optionType: 'button',
     },
-    defaultValue: false,
     fieldName: 'meta.affixTab',
     label: '是否固定标签页',
   },
@@ -394,6 +384,7 @@ export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
       field: 'title',
       title: '菜单标题',
       slots: { default: 'title' },
+      minWidth: 100,
     },
     {
       field: 'name',
