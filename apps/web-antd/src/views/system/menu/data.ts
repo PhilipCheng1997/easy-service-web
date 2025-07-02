@@ -5,10 +5,12 @@ import type { VxeGridPropTypes } from '#/adapter/vxe-table';
 
 import { h } from 'vue';
 
+import { confirm } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { useDebounceFn } from '@vueuse/core';
+import { message } from 'ant-design-vue';
 
 import { z } from '#/adapter/form';
 import {
@@ -16,6 +18,7 @@ import {
   checkMenuPathUnique,
   getMenuTree,
   MenuApi,
+  toggleMenuStatus,
 } from '#/api/system';
 import { componentKeys } from '#/router/routes';
 
@@ -101,7 +104,7 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
       fieldName: 'path',
       label: '菜单路径',
       dependencies: {
-        show: (values) => {
+        if: (values) => {
           return [
             MenuApi.MenuType.CATALOG,
             MenuApi.MenuType.EMBEDDED,
@@ -130,7 +133,6 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
         },
         triggerFields: ['type'],
       },
-      rules: z.string().min(2, '菜单路径最少2个字符').nullable().optional(),
     },
     {
       component: 'Input',
@@ -198,6 +200,18 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
       component: 'InputNumber',
       fieldName: 'meta.order',
       label: '排序',
+    },
+    {
+      component: 'Input',
+      fieldName: 'redirect',
+      label: '重定向',
+      dependencies: {
+        show: (values) => {
+          return values.type === MenuApi.MenuType.CATALOG;
+        },
+        triggerFields: ['type'],
+      },
+      rules: z.string().min(2, '菜单路径最少2个字符').nullable().optional(),
     },
   ];
 };
@@ -435,6 +449,19 @@ export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
       title: '状态',
       cellRender: {
         name: 'CellSwitch',
+        attrs: {
+          beforeChange: async (value: boolean, row: MenuApi.SysMenu) => {
+            const action = value ? '启用' : '禁用';
+            try {
+              await confirm(`确定${action}菜单吗？`);
+              await toggleMenuStatus(row.id);
+              message.success(`${action}成功`);
+              return true;
+            } catch {
+              return false;
+            }
+          },
+        },
       },
     },
     {
@@ -447,7 +474,7 @@ export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
       headerAlign: 'center',
       showOverflow: false,
       title: '操作',
-      width: 100,
+      width: 180,
     },
   ];
 }

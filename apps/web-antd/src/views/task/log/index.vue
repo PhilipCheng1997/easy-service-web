@@ -126,11 +126,8 @@ function handleExecuteTask() {
               }}
             </Tag>
           </DescriptionsItem>
-          <DescriptionsItem label="开始时间" :span="4">
-            {{ taskPlan?.startTime || '-' }}
-          </DescriptionsItem>
-          <DescriptionsItem label="结束时间" :span="4">
-            {{ taskPlan?.endTime || '-' }}
+          <DescriptionsItem label="执行范围" :span="4">
+            {{ taskPlan?.startTime || '-' }} ~ {{ taskPlan?.endTime || '-' }}
           </DescriptionsItem>
           <DescriptionsItem label="随机分钟" :span="4">
             {{ taskPlan?.delayMinutes || '-' }}
@@ -177,9 +174,18 @@ function handleExecuteTask() {
           </Button>
         </template>
         <template #isNotified="{ row }">
-          <span v-if="!row.isExecuted || row.isNotified === -1">无需执行</span>
-          <span v-else-if="row.isNotified === 1">已执行</span>
-          <span v-else>待执行</span>
+          <span v-if="!row.isExecuted || row.isNotified === -1">
+            <Tag>无需执行</Tag>
+          </span>
+          <span v-else-if="row.isNotified === 1">
+            <Tag color="success">已执行</Tag>
+          </span>
+          <span v-else>
+            <Tag color="warning">待执行</Tag>
+          </span>
+        </template>
+        <template #executeRange="{ row }">
+          {{ row.startTime }} ~ {{ row.endTime }}
         </template>
         <template #toolbar-tools>
           <Button type="primary" class="mr-1" @click="handleExecuteTask">

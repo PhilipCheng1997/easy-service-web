@@ -32,6 +32,7 @@ export namespace MenuApi {
     type: MenuType;
     /** 菜单元数据 */
     meta?: {
+      [key: string]: any;
       /** 激活时显示的图标 */
       activeIcon?: string;
       /** 作为路由时，需要激活的菜单的Path */
@@ -106,11 +107,16 @@ async function updateMenu(menu: MenuApi.SysMenu) {
   return requestClient.put<MenuApi.SysMenu>('/system/menu', menu);
 }
 
+async function toggleMenuStatus(menuId: number) {
+  return requestClient.put<MenuApi.SysMenu>(`/system/menu/${menuId}/status`);
+}
+
 export {
   addMenu,
   checkMenuNameUnique,
   checkMenuPathUnique,
   getMenu,
   getMenuTree,
+  toggleMenuStatus,
   updateMenu,
 };

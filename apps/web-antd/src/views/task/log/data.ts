@@ -38,24 +38,20 @@ const formSchema = [
 
 const columns = [
   {
-    field: 'executeTime',
-    title: '执行时间',
-    minWidth: 150,
-  },
-  {
     field: 'executableTime',
     title: '可执行时间',
     minWidth: 150,
   },
   {
-    field: 'startTime',
-    title: '开始时间',
-    minWidth: 110,
+    field: 'executeTime',
+    title: '执行时间',
+    minWidth: 150,
   },
   {
-    field: 'endTime',
-    title: '结束时间',
-    minWidth: 110,
+    field: 'executeRange',
+    title: '执行范围',
+    minWidth: 200,
+    slots: { default: 'executeRange' },
   },
   {
     field: 'delayMinutes',

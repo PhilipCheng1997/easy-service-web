@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
+import { useTabs } from '@vben/hooks';
 
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 import { message } from 'ant-design-vue';
@@ -12,13 +13,20 @@ import { addMenu, getMenu, MenuApi, updateMenu } from '#/api/system';
 
 import { useSchema } from '../data';
 
+const { closeCurrentTab } = useTabs();
+
 const loading = ref<boolean>(false);
 
 const route = useRoute();
-const router = useRouter();
+
 const menuId = computed(() => {
   const id = route.params.id;
   const num = Number(id);
+  return Number.isFinite(num) && num > 0 ? num : undefined;
+});
+const pid = computed(() => {
+  const pid = route.query.pid;
+  const num = Number(pid);
   return Number.isFinite(num) && num > 0 ? num : undefined;
 });
 
@@ -40,7 +48,7 @@ const [Form, formApi] = useVbenForm({
     content: '取消',
   },
   handleReset() {
-    router.go(-1);
+    closeCurrentTab();
   },
   wrapperClass: 'grid-cols-2 gap-x-4',
 });
@@ -66,7 +74,7 @@ async function handleSubmit() {
         await addMenu(data);
         message.success('添加成功');
       }
-      router.go(-1);
+      closeCurrentTab();
     }
   } finally {
     loading.value = false;
@@ -81,9 +89,16 @@ onMounted(() => {
         if (m.pid === 0) {
           m.pid = undefined;
         }
+        if (m.type === MenuApi.MenuType.EMBEDDED) {
+          m.linkSrc = m.meta?.iframeSrc;
+        } else if (m.type === MenuApi.MenuType.LINK) {
+          m.linkSrc = m.meta?.link;
+        }
         formApi.setValues(m);
       })
       .finally(() => (loading.value = false));
+  } else if (pid.value) {
+    formApi.setValues({ pid: pid.value });
   }
 });
 </script>

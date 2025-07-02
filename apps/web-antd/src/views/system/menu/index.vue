@@ -47,11 +47,18 @@ const [Grid] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function gotoForm(row: MenuApi.SysMenu | null) {
-  if (row) {
-    router.push({ path: `/system/menu/edit/${row.id}` });
+function gotoForm(type: 'add' | 'edit', row: MenuApi.SysMenu | null) {
+  if (type === 'edit') {
+    router.push({ path: `/system/menu/edit/${row?.id}` });
   } else {
-    router.push({ path: '/system/menu/add' });
+    if (row) {
+      router.push({
+        path: '/system/menu/add',
+        query: { pid: row.id },
+      });
+    } else {
+      router.push({ path: '/system/menu/add' });
+    }
   }
 }
 </script>
@@ -60,10 +67,11 @@ function gotoForm(row: MenuApi.SysMenu | null) {
   <Page auto-content-height>
     <Grid table-title="菜单管理">
       <template #operation="{ row }">
-        <Button type="link" @click="gotoForm(row)">编辑</Button>
+        <Button type="link" @click="gotoForm('edit', row)">编辑</Button>
+        <Button type="link" @click="gotoForm('add', row)">添加下级</Button>
       </template>
       <template #toolbar-tools>
-        <Button type="primary" @click="gotoForm(null)">添加菜单</Button>
+        <Button type="primary" @click="gotoForm('add', null)">添加菜单</Button>
       </template>
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">
