@@ -3,22 +3,22 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { useRouter } from 'vue-router';
 
-import { Page } from '@vben/common-ui';
+import { confirm, Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { MenuBadge } from '@vben-core/menu-ui';
 
-import { Button } from 'ant-design-vue';
+import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getMenuTree, MenuApi } from '#/api/system';
+import { deleteMenu, getMenuTree, MenuApi } from '#/api/system';
 
 import { useColumns } from './data';
 
 const router = useRouter();
 
-const [Grid] = useVbenVxeGrid({
+const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: useColumns(),
     height: 'auto',
@@ -61,14 +61,35 @@ function gotoForm(type: 'add' | 'edit', row: MenuApi.SysMenu | null) {
     }
   }
 }
+
+function handleDelete(row: MenuApi.SysMenu) {
+  confirm('确定删除该菜单？').then(() => {
+    deleteMenu(row.id as number).then(() => {
+      message.success('删除成功');
+      gridApi.reload();
+    });
+  });
+}
 </script>
 
 <template>
   <Page auto-content-height>
     <Grid table-title="菜单管理">
       <template #operation="{ row }">
-        <Button type="link" @click="gotoForm('edit', row)">编辑</Button>
-        <Button type="link" @click="gotoForm('add', row)">添加下级</Button>
+        <Button type="link" size="small" @click="gotoForm('edit', row)">
+          编辑
+        </Button>
+        <Button type="link" size="small" @click="gotoForm('add', row)">
+          添加下级
+        </Button>
+        <Button
+          type="link"
+          size="small"
+          :danger="true"
+          @click="handleDelete(row)"
+        >
+          删除
+        </Button>
       </template>
       <template #toolbar-tools>
         <Button type="primary" @click="gotoForm('add', null)">添加菜单</Button>

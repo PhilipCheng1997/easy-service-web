@@ -22,8 +22,4 @@ async function queryServiceInfo(params: Recordable<any>) {
   });
 }
 
-async function closeService(serviceName: string) {
-  return requestClient.post(`/service/close?serviceName=${serviceName}`);
-}
-
-export { closeService, queryServiceInfo };
+export { queryServiceInfo };

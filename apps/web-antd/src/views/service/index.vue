@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { ServiceInfoApi } from '#/api/service.ts';
 
 import { Page } from '@vben/common-ui';
 
-import { Button, message, Tag } from 'ant-design-vue';
+import { Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { closeService, queryServiceInfo } from '#/api/service';
+import { queryServiceInfo } from '#/api/service';
 
 const [Grid] = useVbenVxeGrid({
   gridOptions: {
@@ -98,15 +97,6 @@ const [Grid] = useVbenVxeGrid({
     },
   } as VxeTableGridOptions,
 });
-
-function handleCloseService(serviceInfo: ServiceInfoApi.ServiceInfo) {
-  if (serviceInfo.env === 'prod') {
-    message.warning('不允许关闭prod环境的服务');
-  }
-  closeService(serviceInfo.serviceName).then(() => {
-    message.success('关闭服务成功');
-  });
-}
 </script>
 
 <template>
@@ -116,9 +106,7 @@ function handleCloseService(serviceInfo: ServiceInfoApi.ServiceInfo) {
         <Tag>{{ row.serviceName }}</Tag>
         <Tag v-if="row.isCurrentService" color="success">本机</Tag>
       </template>
-      <template #operation="{ row }">
-        <Button type="link" @click="handleCloseService(row)">关闭</Button>
-      </template>
+      <template #operation> </template>
     </Grid>
   </Page>
 </template>

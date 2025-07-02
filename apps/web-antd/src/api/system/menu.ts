@@ -22,7 +22,7 @@ export namespace MenuApi {
 
   export interface SysMenu {
     [key: string]: any;
-    id: number;
+    id?: number;
     pid?: number;
     name: string;
     path?: string;
@@ -111,10 +111,15 @@ async function toggleMenuStatus(menuId: number) {
   return requestClient.put<MenuApi.SysMenu>(`/system/menu/${menuId}/status`);
 }
 
+async function deleteMenu(menuId: number) {
+  return requestClient.delete(`/system/menu/${menuId}`);
+}
+
 export {
   addMenu,
   checkMenuNameUnique,
   checkMenuPathUnique,
+  deleteMenu,
   getMenu,
   getMenuTree,
   toggleMenuStatus,

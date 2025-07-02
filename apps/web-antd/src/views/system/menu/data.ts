@@ -409,27 +409,7 @@ export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
       title: '菜单类型',
       cellRender: {
         name: 'CellTag',
-        options: [
-          {
-            value: 1,
-            label: '目录',
-          },
-          {
-            value: 2,
-            label: '菜单',
-            color: 'success',
-          },
-          {
-            value: 3,
-            label: '内嵌',
-            color: 'warning',
-          },
-          {
-            value: 4,
-            label: '外链',
-            color: 'progressing',
-          },
-        ],
+        options: getMenuTypeOptions(),
       },
     },
     {
@@ -454,7 +434,7 @@ export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
             const action = value ? '启用' : '禁用';
             try {
               await confirm(`确定${action}菜单吗？`);
-              await toggleMenuStatus(row.id);
+              await toggleMenuStatus(row.id as number);
               message.success(`${action}成功`);
               return true;
             } catch {
@@ -474,7 +454,7 @@ export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
       headerAlign: 'center',
       showOverflow: false,
       title: '操作',
-      width: 180,
+      width: 220,
     },
   ];
 }
@@ -482,8 +462,8 @@ export function useColumns(): VxeGridPropTypes.Columns<MenuApi.SysMenu> {
 export function getMenuTypeOptions() {
   return [
     { value: MenuApi.MenuType.CATALOG, label: '目录' },
-    { value: MenuApi.MenuType.MENU, label: '菜单' },
-    { value: MenuApi.MenuType.EMBEDDED, label: '内嵌' },
-    { value: MenuApi.MenuType.LINK, label: '外链' },
+    { value: MenuApi.MenuType.MENU, label: '菜单', color: 'green' },
+    { value: MenuApi.MenuType.EMBEDDED, label: '内嵌', color: 'cyan' },
+    { value: MenuApi.MenuType.LINK, label: '外链', color: 'orange' },
   ];
 }
