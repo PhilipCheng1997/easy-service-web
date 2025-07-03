@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { PermissionApi } from '#/api/system';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
@@ -11,7 +12,7 @@ import { getPermissionTree } from '#/api/system';
 import Form from './component/form.vue';
 import { useColumns } from './data';
 
-const [Grid] = useVbenVxeGrid({
+const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: useColumns(),
     height: 'auto',
@@ -48,14 +49,26 @@ const [Modal, modalApi] = useVbenModal({
 function handleAdd() {
   modalApi.open();
 }
+
+function handleEdit(row: PermissionApi.SysPermission) {
+  modalApi.setData(row).open();
+}
+
+function handleModalConfirm() {
+  gridApi.reload();
+}
 </script>
 
 <template>
   <Page auto-content-height>
-    <Modal />
+    <Modal @success="handleModalConfirm" />
     <Grid>
       <template #toolbar-tools>
         <Button type="primary" @click="handleAdd">添加权限</Button>
+      </template>
+      <template #op="{ row }">
+        <Button type="link" size="small" @click="handleEdit(row)">编辑</Button>
+        <Button type="link" size="small" :danger="true">删除</Button>
       </template>
     </Grid>
   </Page>

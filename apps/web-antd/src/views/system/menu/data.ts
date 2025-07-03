@@ -160,6 +160,7 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
         childrenField: 'children',
         labelField: 'meta.title',
         placeholder: '请选择父级菜单',
+        class: 'w-full',
       },
       renderComponentContent() {
         return {

@@ -18,4 +18,36 @@ async function getPermissionTree() {
   );
 }
 
-export { getPermissionTree };
+async function checkPermissionKeyUnique(
+  permissionKey: string,
+  permissionId?: number,
+) {
+  return requestClient.get<boolean>('/system/permission/check-key', {
+    params: { permissionKey, permissionId },
+  });
+}
+
+async function checkPermissionNameUnique(
+  permissionName: string,
+  permissionId?: number,
+) {
+  return requestClient.get<boolean>('/system/permission/check-name', {
+    params: { permissionName, permissionId },
+  });
+}
+
+async function addPermission(permission: PermissionApi.SysPermission) {
+  return requestClient.post('/system/permission', permission);
+}
+
+async function updatePermission(permission: PermissionApi.SysPermission) {
+  return requestClient.put('/system/permission', permission);
+}
+
+export {
+  addPermission,
+  checkPermissionKeyUnique,
+  checkPermissionNameUnique,
+  getPermissionTree,
+  updatePermission,
+};
