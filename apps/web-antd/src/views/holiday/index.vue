@@ -14,18 +14,20 @@ import { deleteHoliday, saveHoliday } from '#/api/holiday';
 import CalendarHeader from './calendar-header.vue';
 import DateCell from './date-cell.vue';
 
+const loading = ref<boolean>(false);
 const today = dayjs().format('YYYY-MM-DD');
 
 const calendarDataList = ref<Array<CalendarApi.CalendarData>>([]);
 const loadCalendarData = (date: Dayjs = dayjs()) => {
+  loading.value = true;
   const startDate = date
     .subtract(1, 'month')
     .startOf('month')
     .format('YYYY-MM-DD');
   const endDate = date.add(1, 'month').endOf('month').format('YYYY-MM-DD');
-  listCalendarData({ startDate, endDate }).then(
-    (data) => (calendarDataList.value = data),
-  );
+  listCalendarData({ startDate, endDate })
+    .then((data) => (calendarDataList.value = data))
+    .finally(() => (loading.value = false));
 };
 
 const value = ref<Dayjs>();
@@ -95,7 +97,7 @@ watch(
 </script>
 
 <template>
-  <Page auto-content-height>
+  <Page auto-content-height v-loading="loading">
     <div class="bg-background min-w-[800px] p-5">
       <Calendar v-model:value="value" @select="handleSelect">
         <template #headerRender="slotProps">

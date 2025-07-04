@@ -5,22 +5,17 @@ import { computed, ref } from 'vue';
 
 import { Loading, Page, useVbenModal } from '@vben/common-ui';
 
-import {
-  Button,
-  Descriptions,
-  DescriptionsItem,
-  message,
-  Tag,
-} from 'ant-design-vue';
+import { Button, Descriptions, DescriptionsItem, Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { executeTask, getTaskPlan, queryTaskLog } from '#/api';
+import { getTaskPlan, queryTaskLog } from '#/api';
 
+import TermModal from './component/term-modal.vue';
 import { columns, formSchema } from './data';
 
 const loading = ref<boolean>(false);
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid] = useVbenVxeGrid({
   formOptions: {
     schema: formSchema,
     submitOnChange: true,
@@ -55,17 +50,17 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const messageModalContent = ref<string>('');
-const messageModalError = ref<string>('');
 const lines = computed(() => {
   return messageModalContent.value ? messageModalContent.value.split('\n') : [];
 });
 const [MessageModal, messageModalApi] = useVbenModal({
   onConfirm: () => messageModalApi.close(),
+  connectedComponent: TermModal,
+  closeOnClickModal: false,
 });
-function openMessageModal(content: string = '', error: string = '') {
+function openMessageModal(content: string = '') {
   messageModalContent.value = content;
-  messageModalError.value = error;
-  messageModalApi.open();
+  messageModalApi.setData({ action: 'output', content }).open();
 }
 
 const taskPlan = ref<any>({});
@@ -85,16 +80,17 @@ function openTaskPlanModal() {
 }
 
 function handleExecuteTask() {
-  loading.value = true;
-  executeTask()
-    .then((taskLog) => {
-      message.success('执行成功');
-      if (taskLog) {
-        openMessageModal(taskLog.scriptOutput, taskLog.error);
-      }
-      gridApi.reload();
-    })
-    .finally(() => (loading.value = false));
+  // loading.value = true;
+  // executeTask()
+  //   .then((taskLog) => {
+  //     message.success('执行成功');
+  //     if (taskLog) {
+  //       openMessageModal(taskLog.scriptOutput, taskLog.error);
+  //     }
+  //     gridApi.reload();
+  //   })
+  //   .finally(() => (loading.value = false));
+  messageModalApi.setData({ action: 'execute' }).open();
 }
 </script>
 
@@ -168,7 +164,7 @@ function handleExecuteTask() {
           <Button
             v-if="row.error"
             type="link"
-            @click="openMessageModal('', row.error)"
+            @click="openMessageModal(row.error)"
           >
             查看
           </Button>
