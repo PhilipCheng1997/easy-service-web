@@ -28,9 +28,13 @@ const [Modal, modalApi] = useVbenModal({
         });
         eventSource.addEventListener('error', (e) => {
           console.log(e);
+          if (e.data) {
+            message.error(`执行失败：${e.data}`);
+          }
           eventSource.close();
         });
         eventSource.addEventListener('result', (e) => {
+          console.log(e.data);
           message.success('执行成功');
         });
       }
@@ -42,7 +46,13 @@ const [Modal, modalApi] = useVbenModal({
       const fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
 
-      setTimeout(() => fitAddon.fit(), 20);
+      // 创建一个 ResizeObserver 实例
+      const resizeObserver = new ResizeObserver(() => {
+        fitAddon.fit();
+      });
+      resizeObserver.observe(terminal);
+
+      // setTimeout(() => fitAddon.fit(), 20);
     }
   },
 });
