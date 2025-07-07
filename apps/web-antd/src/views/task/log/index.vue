@@ -15,7 +15,7 @@ import { columns, formSchema } from './data';
 
 const loading = ref<boolean>(false);
 
-const [Grid] = useVbenVxeGrid({
+const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
     schema: formSchema,
     submitOnChange: true,
@@ -87,7 +87,11 @@ function handleExecuteTask() {
 <template>
   <Loading :spinning="loading" text="正在执行任务...">
     <Page auto-content-height>
-      <MessageModal title="查看信息" :show-cancel-button="false" />
+      <MessageModal
+        title="查看信息"
+        :show-cancel-button="false"
+        @success="() => gridApi.reload()"
+      />
       <TaskPlanModal title="查看当日执行计划" :show-cancel-button="false">
         <Descriptions layout="horizontal" bordered>
           <DescriptionsItem label="预计执行时间" :span="4">

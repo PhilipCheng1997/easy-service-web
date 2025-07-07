@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { defineEmits, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
@@ -8,7 +8,9 @@ import { FitAddon } from 'xterm-addon-fit';
 
 import 'xterm/css/xterm.css';
 
+const emit = defineEmits(['success']);
 const terminal = ref();
+const currentAction = ref<string>();
 function initTerminal() {
   const term = new Terminal({
     disableStdin: true,
@@ -77,6 +79,7 @@ const [Modal, modalApi] = useVbenModal({
     };
 
     const { action, content } = modalApi.getData();
+    currentAction.value = action;
     if (action === 'output') {
       terminal.value.write('\u001B[?25l');
       content
@@ -116,6 +119,11 @@ const [Modal, modalApi] = useVbenModal({
         terminal.value.writeln('\u001B[1;32m\r\n✔ 任务执行完成!\u001B[0m');
         eventSource.close();
       });
+    }
+  },
+  onClosed() {
+    if (currentAction.value === 'execute') {
+      emit('success');
     }
   },
 });
