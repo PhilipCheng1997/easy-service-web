@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 import { Loading, Page, useVbenModal } from '@vben/common-ui';
 
@@ -50,17 +50,17 @@ const [Grid] = useVbenVxeGrid({
 });
 
 const messageModalContent = ref<string>('');
-const lines = computed(() => {
-  return messageModalContent.value ? messageModalContent.value.split('\n') : [];
-});
 const [MessageModal, messageModalApi] = useVbenModal({
   onConfirm: () => messageModalApi.close(),
   connectedComponent: TermModal,
   closeOnClickModal: false,
 });
-function openMessageModal(content: string = '') {
+function openMessageModal(
+  content: string = '',
+  action: 'error' | 'execute' | 'output' = 'output',
+) {
   messageModalContent.value = content;
-  messageModalApi.setData({ action: 'output', content }).open();
+  messageModalApi.setData({ action, content }).open();
 }
 
 const taskPlan = ref<any>({});
@@ -80,16 +80,6 @@ function openTaskPlanModal() {
 }
 
 function handleExecuteTask() {
-  // loading.value = true;
-  // executeTask()
-  //   .then((taskLog) => {
-  //     message.success('执行成功');
-  //     if (taskLog) {
-  //       openMessageModal(taskLog.scriptOutput, taskLog.error);
-  //     }
-  //     gridApi.reload();
-  //   })
-  //   .finally(() => (loading.value = false));
   messageModalApi.setData({ action: 'execute' }).open();
 }
 </script>
@@ -97,14 +87,7 @@ function handleExecuteTask() {
 <template>
   <Loading :spinning="loading" text="正在执行任务...">
     <Page auto-content-height>
-      <MessageModal title="查看信息" :show-cancel-button="false">
-        <p v-if="messageModalError" class="mb-4">
-          异常：<Tag color="error">{{ messageModalError }}</Tag>
-        </p>
-        <div class="terminal" v-if="lines.length > 0">
-          <pre v-for="(line, index) in lines" :key="index">{{ line }}</pre>
-        </div>
-      </MessageModal>
+      <MessageModal title="查看信息" :show-cancel-button="false" />
       <TaskPlanModal title="查看当日执行计划" :show-cancel-button="false">
         <Descriptions layout="horizontal" bordered>
           <DescriptionsItem label="预计执行时间" :span="4">
@@ -164,7 +147,7 @@ function handleExecuteTask() {
           <Button
             v-if="row.error"
             type="link"
-            @click="openMessageModal(row.error)"
+            @click="openMessageModal(row.error, 'error')"
           >
             查看
           </Button>

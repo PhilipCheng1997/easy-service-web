@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import { useVbenModal } from '@vben/common-ui';
 
 import { Terminal } from 'xterm';
@@ -6,25 +8,32 @@ import { FitAddon } from 'xterm-addon-fit';
 
 import 'xterm/css/xterm.css';
 
+const terminal = ref();
+function initTerminal() {
+  const term = new Terminal({
+    disableStdin: true,
+  });
+
+  const terminalEl = document.querySelector('#terminal');
+  if (terminalEl) {
+    term.open(terminalEl as HTMLElement);
+
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+
+    // 创建一个 ResizeObserver 实例
+    const resizeObserver = new ResizeObserver(() => {
+      fitAddon.fit();
+    });
+    resizeObserver.observe(terminalEl);
+  }
+
+  terminal.value = term;
+}
+
 const [Modal, modalApi] = useVbenModal({
   onOpened() {
-    const term = new Terminal({
-      disableStdin: true,
-    });
-
-    const terminal = document.querySelector('#terminal');
-    if (terminal) {
-      term.open(terminal as HTMLElement);
-
-      const fitAddon = new FitAddon();
-      term.loadAddon(fitAddon);
-
-      // 创建一个 ResizeObserver 实例
-      const resizeObserver = new ResizeObserver(() => {
-        fitAddon.fit();
-      });
-      resizeObserver.observe(terminal);
-    }
+    initTerminal();
 
     // 旋转指示器相关变量
     const spinnerChars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
@@ -40,15 +49,15 @@ const [Modal, modalApi] = useVbenModal({
       spinnerIndex = 0;
 
       // 写入消息并保存光标位置
-      term.write('\u001B[s');
+      terminal.value.write('\u001B[s');
 
       spinnerInterval = setInterval(() => {
         // 恢复光标位置
-        term.write('\u001B[u');
+        terminal.value.write('\u001B[u');
         // 更新旋转指示器
         const char = spinnerChars[spinnerIndex];
         if (char) {
-          term.write(`\u001B[1;33m${char}\u001B[0m`);
+          terminal.value.write(`\u001B[1;33m${char}\u001B[0m`);
         }
         spinnerIndex = (spinnerIndex + 1) % spinnerChars.length;
       }, 150);
@@ -63,17 +72,22 @@ const [Modal, modalApi] = useVbenModal({
         clearInterval(spinnerInterval);
         spinnerInterval = null;
         // 清除旋转指示器并显示结果
-        term.write('\u001B[u\u001B[K');
+        terminal.value.write('\u001B[u\u001B[K');
       }
     };
 
     const { action, content } = modalApi.getData();
     if (action === 'output') {
-      content.split('\n').forEach((line: string) => term.writeln(`$ ${line}`));
+      terminal.value.write('\u001B[?25l');
+      content
+        .split('\n')
+        .forEach((line: string) => terminal.value.writeln(`$ ${line}`));
+    } else if (action === 'error') {
+      terminal.value.write(`\u001B[1;31m执行失败：${content}\u001B[0m\r\n`);
     } else {
       // 隐藏光标
-      term.write('\u001B[?25l');
-      term.writeln('\u001B[1;32m开始执行任务...\r\n\u001B[0m');
+      terminal.value.write('\u001B[?25l');
+      terminal.value.writeln('\u001B[1;32m开始执行任务...\r\n\u001B[0m');
 
       // 启动旋转指示器
       startSpinner();
@@ -82,22 +96,24 @@ const [Modal, modalApi] = useVbenModal({
       eventSource.addEventListener('message', (e) => {
         // 停止旋转指示器
         stopSpinner();
-        term.writeln(`$ ${e.data}`);
+        terminal.value.writeln(`$ ${e.data}`);
         // 重新启动旋转指示器
         startSpinner();
       });
       eventSource.addEventListener('error', (e) => {
         // 停止旋转指示器
         stopSpinner();
-        if (e.data) {
-          term.write(`\u001B[1;31m\r\n执行失败：${e.data}\u001B[0m\r\n`);
+        if (e instanceof MessageEvent && e.data) {
+          terminal.value.write(
+            `\u001B[1;31m\r\n执行失败：${e.data}\u001B[0m\r\n`,
+          );
         }
         eventSource.close();
       });
       eventSource.addEventListener('result', () => {
         // 停止旋转指示器
         stopSpinner();
-        term.writeln('\u001B[1;32m\r\n✔ 任务执行完成!\u001B[0m');
+        terminal.value.writeln('\u001B[1;32m\r\n✔ 任务执行完成!\u001B[0m');
         eventSource.close();
       });
     }
