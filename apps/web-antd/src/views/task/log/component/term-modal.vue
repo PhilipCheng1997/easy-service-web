@@ -14,6 +14,7 @@ const currentAction = ref<string>();
 function initTerminal() {
   const term = new Terminal({
     disableStdin: true,
+    fontFamily: 'Consolas, monospace',
   });
 
   const terminalEl = document.querySelector('#terminal');
@@ -79,17 +80,15 @@ const [Modal, modalApi] = useVbenModal({
     };
 
     const { action, content } = modalApi.getData();
-    currentAction.value = action;
+    currentAction.value = action; // 隐藏光标
+    terminal.value.write('\u001B[?25l');
     if (action === 'output') {
-      terminal.value.write('\u001B[?25l');
       content
         .split('\n')
         .forEach((line: string) => terminal.value.writeln(`$ ${line}`));
     } else if (action === 'error') {
       terminal.value.write(`\u001B[1;31m执行失败：${content}\u001B[0m\r\n`);
     } else {
-      // 隐藏光标
-      terminal.value.write('\u001B[?25l');
       terminal.value.writeln('\u001B[1;32m开始执行任务...\r\n\u001B[0m');
 
       // 启动旋转指示器
@@ -106,6 +105,8 @@ const [Modal, modalApi] = useVbenModal({
       eventSource.addEventListener('error', (e) => {
         // 停止旋转指示器
         stopSpinner();
+        // eslint-disable-next-line no-console
+        console.log(e);
         if (e instanceof MessageEvent && e.data) {
           terminal.value.write(
             `\u001B[1;31m\r\n执行失败：${e.data}\u001B[0m\r\n`,
@@ -140,5 +141,11 @@ const [Modal, modalApi] = useVbenModal({
 <style lang="scss" scoped>
 .xterm-screen {
   width: 100%;
+
+  .xterm-rows {
+    & > div {
+      line-height: 20px !important;
+    }
+  }
 }
 </style>

@@ -118,4 +118,15 @@ function handleDelete(row: MenuApi.SysMenu) {
   </Page>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped>
+.menu-badge {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+
+  & > :deep(div) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+</style>

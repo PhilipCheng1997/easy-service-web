@@ -91,6 +91,8 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
         validateOnChange: false,
         validateOnModelUpdate: false,
         validateOnInput: false,
+        validateOnMount: false,
+        validateOnValueUpdate: false,
       },
     },
     {
@@ -212,7 +214,7 @@ const getBasicGroup = (id: number | undefined): VbenFormSchema[] => {
         },
         triggerFields: ['type'],
       },
-      rules: z.string().min(2, '菜单路径最少2个字符').nullable().optional(),
+      rules: z.string().min(2, '重定向路径最少2个字符').nullable(),
     },
   ];
 };
