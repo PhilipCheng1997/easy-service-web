@@ -11,6 +11,8 @@ import 'xterm/css/xterm.css';
 const emit = defineEmits(['success']);
 const terminal = ref();
 const currentAction = ref<string>();
+const currentEventSource = ref<EventSource>();
+
 function initTerminal() {
   const term = new Terminal({
     disableStdin: true,
@@ -87,7 +89,7 @@ const [Modal, modalApi] = useVbenModal({
         .split('\n')
         .forEach((line: string) => terminal.value.writeln(`$ ${line}`));
     } else if (action === 'error') {
-      terminal.value.write(`\u001B[1;31m执行失败：${content}\u001B[0m\r\n`);
+      terminal.value.write(`\u001B[1;31m✖ 执行失败：${content}\u001B[0m\r\n`);
     } else {
       terminal.value.writeln('\u001B[1;32m开始执行任务...\r\n\u001B[0m');
 
@@ -95,6 +97,7 @@ const [Modal, modalApi] = useVbenModal({
       startSpinner();
 
       const eventSource = new EventSource('/api/task/execute/stream');
+      currentEventSource.value = eventSource;
       eventSource.addEventListener('message', (e) => {
         // 停止旋转指示器
         stopSpinner();
@@ -107,9 +110,9 @@ const [Modal, modalApi] = useVbenModal({
         stopSpinner();
         // eslint-disable-next-line no-console
         console.log(e);
-        if (e instanceof MessageEvent && e.data) {
+        if (e.data) {
           terminal.value.write(
-            `\u001B[1;31m\r\n执行失败：${e.data}\u001B[0m\r\n`,
+            `\u001B[1;31m\r\n✖ 执行失败：${e.data}\u001B[0m\r\n`,
           );
         }
         eventSource.close();
@@ -125,6 +128,9 @@ const [Modal, modalApi] = useVbenModal({
   onClosed() {
     if (currentAction.value === 'execute') {
       emit('success');
+    }
+    if (currentEventSource.value) {
+      currentEventSource.value.close();
     }
   },
 });
