@@ -5,7 +5,13 @@ import { ref } from 'vue';
 
 import { Loading, Page, useVbenModal } from '@vben/common-ui';
 
-import { Button, Descriptions, DescriptionsItem, Tag } from 'ant-design-vue';
+import {
+  Button,
+  Checkbox,
+  Descriptions,
+  DescriptionsItem,
+  Tag,
+} from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getTaskPlan, queryTaskLog } from '#/api';
@@ -14,6 +20,7 @@ import TermModal from './component/term-modal.vue';
 import { columns, formSchema } from './data';
 
 const loading = ref<boolean>(false);
+const isSkipTimeCheck = ref<boolean>(false);
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
@@ -80,7 +87,9 @@ function openTaskPlanModal() {
 }
 
 function handleExecuteTask() {
-  messageModalApi.setData({ action: 'execute' }).open();
+  messageModalApi
+    .setData({ action: 'execute', isSkipTimeCheck: isSkipTimeCheck.value })
+    .open();
 }
 </script>
 
@@ -171,10 +180,16 @@ function handleExecuteTask() {
           {{ row.startTime }} ~ {{ row.endTime }}
         </template>
         <template #toolbar-tools>
-          <Button type="primary" class="mr-1" @click="handleExecuteTask">
+          <Checkbox v-model:checked="isSkipTimeCheck">跳过检查</Checkbox>
+          <Button
+            type="primary"
+            class="mr-1"
+            @click="handleExecuteTask"
+            size="small"
+          >
             立即执行
           </Button>
-          <Button type="primary" @click="openTaskPlanModal">
+          <Button type="primary" @click="openTaskPlanModal" size="small">
             查看执行计划
           </Button>
         </template>
