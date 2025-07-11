@@ -9,9 +9,52 @@ import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
 
 const emit = defineEmits(['success']);
+
 const terminal = ref();
-const currentAction = ref<string>();
-const currentEventSource = ref<EventSource>();
+
+let currentAction: null | string = null;
+let eventSource: EventSource | null = null;
+
+// 旋转指示器相关变量
+const spinnerChars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+let spinnerInterval: NodeJS.Timeout | null = null;
+let spinnerIndex = 0;
+let isSpinning = false;
+
+// 启动旋转指示器
+function startSpinner() {
+  if (!terminal.value || isSpinning) return;
+
+  isSpinning = true;
+  spinnerIndex = 0;
+
+  // 写入消息并保存光标位置
+  terminal.value.write('\u001B[s');
+
+  spinnerInterval = setInterval(() => {
+    // 恢复光标位置
+    terminal.value.write('\u001B[u');
+    // 更新旋转指示器
+    const char = spinnerChars[spinnerIndex];
+    if (char) {
+      terminal.value.write(`\u001B[1;33m${char}\u001B[0m`);
+    }
+    spinnerIndex = (spinnerIndex + 1) % spinnerChars.length;
+  }, 150);
+}
+
+// 停止旋转指示器
+function stopSpinner() {
+  if (!isSpinning) return;
+
+  isSpinning = false;
+  if (spinnerInterval) {
+    clearInterval(spinnerInterval);
+    spinnerInterval = null;
+    // 清除旋转指示器并显示结果
+    terminal.value.write('\u001B[u\u001B[K');
+  }
+}
 
 function initTerminal() {
   const term = new Terminal({
@@ -40,49 +83,8 @@ const [Modal, modalApi] = useVbenModal({
   onOpened() {
     initTerminal();
 
-    // 旋转指示器相关变量
-    const spinnerChars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-    let spinnerInterval: NodeJS.Timeout | null = null;
-    let spinnerIndex = 0;
-    let isSpinning = false;
-
-    // 启动旋转指示器
-    const startSpinner = () => {
-      if (isSpinning) return;
-
-      isSpinning = true;
-      spinnerIndex = 0;
-
-      // 写入消息并保存光标位置
-      terminal.value.write('\u001B[s');
-
-      spinnerInterval = setInterval(() => {
-        // 恢复光标位置
-        terminal.value.write('\u001B[u');
-        // 更新旋转指示器
-        const char = spinnerChars[spinnerIndex];
-        if (char) {
-          terminal.value.write(`\u001B[1;33m${char}\u001B[0m`);
-        }
-        spinnerIndex = (spinnerIndex + 1) % spinnerChars.length;
-      }, 150);
-    };
-
-    // 停止旋转指示器
-    const stopSpinner = () => {
-      if (!isSpinning) return;
-
-      isSpinning = false;
-      if (spinnerInterval) {
-        clearInterval(spinnerInterval);
-        spinnerInterval = null;
-        // 清除旋转指示器并显示结果
-        terminal.value.write('\u001B[u\u001B[K');
-      }
-    };
-
     const { action, content } = modalApi.getData();
-    currentAction.value = action; // 隐藏光标
+    currentAction = action;
     terminal.value.write('\u001B[?25l');
     if (action === 'output') {
       content
@@ -96,8 +98,7 @@ const [Modal, modalApi] = useVbenModal({
       // 启动旋转指示器
       startSpinner();
 
-      const eventSource = new EventSource('/api/task/execute/stream');
-      currentEventSource.value = eventSource;
+      eventSource = new EventSource('/api/task/execute/stream');
       eventSource.addEventListener('message', (e) => {
         // 停止旋转指示器
         stopSpinner();
@@ -115,23 +116,22 @@ const [Modal, modalApi] = useVbenModal({
             `\u001B[1;31m\r\n✖ 执行失败：${e.data}\u001B[0m\r\n`,
           );
         }
-        eventSource.close();
+        eventSource?.close();
       });
       eventSource.addEventListener('result', () => {
         // 停止旋转指示器
         stopSpinner();
         terminal.value.writeln('\u001B[1;32m\r\n✔ 任务执行完成!\u001B[0m');
-        eventSource.close();
+        eventSource?.close();
       });
     }
   },
   onClosed() {
-    if (currentAction.value === 'execute') {
+    stopSpinner();
+    if (currentAction === 'execute') {
       emit('success');
     }
-    if (currentEventSource.value) {
-      currentEventSource.value.close();
-    }
+    eventSource?.close();
   },
 });
 </script>

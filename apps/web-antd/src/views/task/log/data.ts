@@ -38,13 +38,13 @@ const formSchema = [
 
 const columns = [
   {
-    field: 'executableTime',
-    title: '可执行时间',
+    field: 'executeTime',
+    title: '执行时间',
     minWidth: 150,
   },
   {
-    field: 'executeTime',
-    title: '执行时间',
+    field: 'executableTime',
+    title: '可执行时间',
     minWidth: 150,
   },
   {
