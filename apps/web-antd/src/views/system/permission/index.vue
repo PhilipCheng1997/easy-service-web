@@ -64,7 +64,7 @@ function handleModalConfirm() {
     <Modal @success="handleModalConfirm" />
     <Grid>
       <template #toolbar-tools>
-        <Button type="primary" @click="handleAdd">添加权限</Button>
+        <Button type="primary" @click="handleAdd" size="small">添加权限</Button>
       </template>
       <template #op="{ row }">
         <Button type="link" size="small" @click="handleEdit(row)">编辑</Button>

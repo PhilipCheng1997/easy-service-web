@@ -92,7 +92,9 @@ function handleDelete(row: MenuApi.SysMenu) {
         </Button>
       </template>
       <template #toolbar-tools>
-        <Button type="primary" @click="gotoForm('add', null)">添加菜单</Button>
+        <Button type="primary" @click="gotoForm('add', null)" size="small">
+          添加菜单
+        </Button>
       </template>
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">
