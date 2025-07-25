@@ -525,19 +525,19 @@ importers:
         version: 22.15.3
       '@vben/commitlint-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/commitlint-config
+        version: link:internal/lint-configs/commitlint-components-config
       '@vben/eslint-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/eslint-config
+        version: link:internal/lint-configs/eslint-components-config
       '@vben/prettier-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/prettier-config
+        version: link:internal/lint-configs/prettier-components-config
       '@vben/stylelint-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/stylelint-config
+        version: link:internal/lint-configs/stylelint-components-config
       '@vben/tailwind-config':
         specifier: workspace:*
-        version: link:internal/tailwind-config
+        version: link:internal/tailwind-components-config
       '@vben/tsconfig':
         specifier: workspace:*
         version: link:internal/tsconfig
@@ -546,7 +546,7 @@ importers:
         version: link:scripts/turbo-run
       '@vben/vite-config':
         specifier: workspace:*
-        version: link:internal/vite-config
+        version: link:internal/vite-components-config
       '@vben/vsh':
         specifier: workspace:*
         version: link:scripts/vsh
@@ -629,6 +629,12 @@ importers:
 
   apps/web-antd:
     dependencies:
+      '@logicflow/core':
+        specifier: ^2.0.16
+        version: 2.0.16
+      '@logicflow/extension':
+        specifier: ^2.0.21
+        version: 2.0.21(@logicflow/core@2.0.16)
       '@vben-core/menu-ui':
         specifier: workspace:*
         version: link:../../packages/@core/ui-kit/menu-ui
@@ -695,6 +701,9 @@ importers:
       vue-router:
         specifier: 'catalog:'
         version: 4.5.1(vue@3.5.13(typescript@5.8.3))
+      vuedraggable:
+        specifier: ^4.1.0
+        version: 4.1.0(vue@3.5.13(typescript@5.8.3))
       xterm:
         specifier: ^5.3.0
         version: 5.3.0
@@ -1765,6 +1774,9 @@ packages:
 
   '@antfu/utils@0.7.10':
     resolution: {integrity: sha512-+562v9k4aI80m1+VuMHehNJWLOFjBnXn3tdOitzD0il5b7smkSBal4+a3oKiQTbrwMmN/TBUMDvbdoWDehgOww==}
+
+  '@antv/hierarchy@0.6.14':
+    resolution: {integrity: sha512-V3uknf7bhynOqQDw2sg+9r9DwZ9pc6k/EcqyTFdfXB1+ydr7urisP0MipIuimucvQKN+Qkd+d6w601r1UIroqQ==}
 
   '@apideck/better-ajv-errors@0.3.6':
     resolution: {integrity: sha512-P+ZygBLZtkp0qqOAJJVX4oX/sFo5JR3eBWwwuqHHhK0GIgQOKWrAfiAaWX0aArHkRWHMuggFEgAZNxVPwPZYaA==}
@@ -3369,6 +3381,14 @@ packages:
   '@keyv/serialize@1.0.3':
     resolution: {integrity: sha512-qnEovoOp5Np2JDGonIDL6Ayihw0RhnRh6vxPuHo4RDn1UOzwEo4AeIfpL6UGIrsceWrCMiVPgwRjbHu4vYFc3g==}
 
+  '@logicflow/core@2.0.16':
+    resolution: {integrity: sha512-KoNdY5g7WcAtfk7sMe+uOOso28mw6dwCHgLKmnzC0nenASD0HGWhFq+Yo7ktHP2asMXUISPb9hbQA221NcYZdg==}
+
+  '@logicflow/extension@2.0.21':
+    resolution: {integrity: sha512-SdYBOnDlCEOEElScGFIprgxqH0fv39ur7suyYzhiWUaWjL/TpvIESgqcR/ujE9aolFNTtzv2USc6xPcrouc4PQ==}
+    peerDependencies:
+      '@logicflow/core': 2.0.16
+
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
 
@@ -3895,6 +3915,9 @@ packages:
 
   '@speed-highlight/core@1.2.7':
     resolution: {integrity: sha512-0dxmVj4gxg3Jg879kvFS/msl4s9F3T9UXC1InxgOf7t5NvcPD97u/WTA5vL/IxWHMn7qSxBozqrnnE2wvl1m8g==}
+
+  '@sphinxxxx/color-conversion@2.2.2':
+    resolution: {integrity: sha512-XExJS3cLqgrmNBIP3bBw6+1oQ1ksGjFh0+oClDKFYpCCqx/hlqwWO5KO/S63fzUo67SxI9dMrF0y5T/Ey7h8Zw==}
 
   '@stylistic/stylelint-plugin@3.1.2':
     resolution: {integrity: sha512-tylFJGMQo62alGazK74MNxFjMagYOHmBZiePZFOJK2n13JZta0uVkB3Bh5qodUmOLtRH+uxH297EibK14UKm8g==}
@@ -5005,6 +5028,9 @@ packages:
 
   class-variance-authority@0.7.1:
     resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
+
+  classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
 
   clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
@@ -6614,6 +6640,9 @@ packages:
   hey-listen@1.0.8:
     resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
 
+  hoist-non-react-statics@2.5.5:
+    resolution: {integrity: sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==}
+
   homedir-polyfill@1.0.3:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
@@ -7515,6 +7544,9 @@ packages:
     resolution: {integrity: sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==}
     engines: {node: '>= 0.8'}
 
+  medium-editor@5.23.3:
+    resolution: {integrity: sha512-he9/TdjX8f8MGdXGfCs8AllrYnqXJJvjNkDKmPg3aPW/uoIrlRqtkFthrwvmd+u4QyzEiadhCCM0EwTiRdUCJw==}
+
   meow@12.1.1:
     resolution: {integrity: sha512-BhXM0Au22RwUneMPwSCnyhTOizdWoIEPU9sp0Aqa1PnDMR5Wv2FGXYDjuzJEIX+Eo2Rb8xuYe5jrnm5QowQFkw==}
     engines: {node: '>=16.10'}
@@ -7694,10 +7726,27 @@ packages:
   mlly@1.7.4:
     resolution: {integrity: sha512-qmdSIPC4bDJXgZTCR7XosJiNKySV7O215tsPtDN9iEO/7q/76b/ijtgRu/+epFXSJhijtTCCGp3DWS549P3xKw==}
 
+  mobx-preact@3.0.0:
+    resolution: {integrity: sha512-ijan/cBs3WmRye87E5+3JmoFBB00KDAwNA3pm7bMwYLPHBAXlN86aC3gdrXw8aKzM5RI8V3a993PphzPv6P4FA==}
+    peerDependencies:
+      mobx: 5.x
+      preact: '>=8'
+
+  mobx-utils@5.6.2:
+    resolution: {integrity: sha512-a/WlXyGkp6F12b01sTarENpxbmlRgPHFyR1Xv2bsSjQBm5dcOtd16ONb40/vOqck8L99NHpI+C9MXQ+SZ8f+yw==}
+    peerDependencies:
+      mobx: ^4.13.1 || ^5.13.1
+
+  mobx@5.15.7:
+    resolution: {integrity: sha512-wyM3FghTkhmC+hQjyPGGFdpehrcX1KOXsDuERhfK2YbJemkUhEB+6wzEN639T21onxlfYBmriA1PFnvxTUhcKw==}
+
   module-definition@5.0.1:
     resolution: {integrity: sha512-kvw3B4G19IXk+BOXnYq/D/VeO9qfHaapMeuS7w7sNUqmGaA6hywdFHMi+VWeR9wUScXM7XjoryTffCZ5B0/8IA==}
     engines: {node: '>=14'}
     hasBin: true
+
+  mousetrap@1.6.5:
+    resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
 
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -8650,6 +8699,9 @@ packages:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  preact@10.26.9:
+    resolution: {integrity: sha512-SSjF9vcnF27mJK1XyFMNJzFd5u3pQiATFqoaDy03XuN00u4ziveVVEGt5RKJrDR8MHE/wJo9Nnad56RLzS2RMA==}
+
   precinct@11.0.5:
     resolution: {integrity: sha512-oHSWLC8cL/0znFhvln26D14KfCQFFn4KOLSw6hmLhd+LQ2SKt9Ljm89but76Pc7flM9Ty1TnXyrA2u16MfRV3w==}
     engines: {node: ^14.14.0 || >=16.0.0}
@@ -8820,6 +8872,9 @@ packages:
   range-parser@1.2.1:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
+
+  rangy@1.3.2:
+    resolution: {integrity: sha512-fS1C4MOyk8T+ZJZdLcgrukPWxkyDXa+Hd2Kj+Zg4wIK71yrWgmjzHubzPMY1G+WD9EgGxMp3fIL0zQ1ickmSWA==}
 
   raw-body@3.0.0:
     resolution: {integrity: sha512-RmkhL8CAyCRPXCE28MMH0z2PNWQBNk2Q09ZdxM9IOOXwxwZbN+qbWaatPkdkWIKL2ZVDImrN/pK5HTRz2PcS4g==}
@@ -9254,6 +9309,9 @@ packages:
   socks@2.8.4:
     resolution: {integrity: sha512-D3YaD0aRxR3mEcqnidIs7ReYJFVzWdd6fXJYUM8ixcQcJRGTka/b3saV0KflYhyVJXKhb947GndU35SxYNResQ==}
     engines: {node: '>= 10.0.0', npm: '>= 3.0.0'}
+
+  sortablejs@1.14.0:
+    resolution: {integrity: sha512-pBXvQCs5/33fdN1/39pPL0NZF20LeRbLQ5jtnheIPN9JQAaufGjKdWduZn4U7wCtVuzKhmRkI0DFYHYRbB2H1w==}
 
   sortablejs@1.15.6:
     resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
@@ -10033,8 +10091,15 @@ packages:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
     hasBin: true
 
+  uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
+
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
+
+  vanilla-picker@2.12.3:
+    resolution: {integrity: sha512-qVkT1E7yMbUsB2mmJNFmaXMWE2hF8ffqzMMwe9zdAikd8u2VfnsVY2HQcOUi2F38bgbxzlJBEdS1UUhOXdF9GQ==}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -10244,6 +10309,11 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  vuedraggable@4.1.0:
+    resolution: {integrity: sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==}
+    peerDependencies:
+      vue: ^3.5.13
 
   vxe-pc-ui@4.5.35:
     resolution: {integrity: sha512-Uz4TacwTlithKkLY3sVyjOkwijstAnfCnVhhM5Gkrh33ABFZzNWGk/RC4xSRkSzrTATaCjLdlDoeRFczSF2/yQ==}
@@ -10568,6 +10638,8 @@ snapshots:
       vue: 3.5.13(typescript@5.8.3)
 
   '@antfu/utils@0.7.10': {}
+
+  '@antv/hierarchy@0.6.14': {}
 
   '@apideck/better-ajv-errors@0.3.6(ajv@8.17.1)':
     dependencies:
@@ -12412,6 +12484,29 @@ snapshots:
     dependencies:
       buffer: 6.0.3
 
+  '@logicflow/core@2.0.16':
+    dependencies:
+      classnames: 2.5.1
+      lodash-es: 4.17.21
+      mobx: 5.15.7
+      mobx-preact: 3.0.0(mobx@5.15.7)(preact@10.26.9)
+      mobx-utils: 5.6.2(mobx@5.15.7)
+      mousetrap: 1.6.5
+      preact: 10.26.9
+      uuid: 9.0.1
+
+  '@logicflow/extension@2.0.21(@logicflow/core@2.0.16)':
+    dependencies:
+      '@antv/hierarchy': 0.6.14
+      '@logicflow/core': 2.0.16
+      classnames: 2.5.1
+      lodash-es: 4.17.21
+      medium-editor: 5.23.3
+      mobx: 5.15.7
+      preact: 10.26.9
+      rangy: 1.3.2
+      vanilla-picker: 2.12.3
+
   '@manypkg/find-root@1.1.0':
     dependencies:
       '@babel/runtime': 7.27.0
@@ -13010,6 +13105,8 @@ snapshots:
   '@sindresorhus/merge-streams@4.0.0': {}
 
   '@speed-highlight/core@1.2.7': {}
+
+  '@sphinxxxx/color-conversion@2.2.2': {}
 
   '@stylistic/stylelint-plugin@3.1.2(stylelint@16.19.1(typescript@5.8.3))':
     dependencies:
@@ -14340,6 +14437,8 @@ snapshots:
   class-variance-authority@0.7.1:
     dependencies:
       clsx: 2.1.1
+
+  classnames@2.5.1: {}
 
   clean-css@5.3.3:
     dependencies:
@@ -16196,6 +16295,8 @@ snapshots:
 
   hey-listen@1.0.8: {}
 
+  hoist-non-react-statics@2.5.5: {}
+
   homedir-polyfill@1.0.3:
     dependencies:
       parse-passwd: 1.0.0
@@ -17044,6 +17145,8 @@ snapshots:
 
   media-typer@1.1.0: {}
 
+  medium-editor@5.23.3: {}
+
   meow@12.1.1: {}
 
   meow@13.2.0: {}
@@ -17195,10 +17298,24 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
+  mobx-preact@3.0.0(mobx@5.15.7)(preact@10.26.9):
+    dependencies:
+      hoist-non-react-statics: 2.5.5
+      mobx: 5.15.7
+      preact: 10.26.9
+
+  mobx-utils@5.6.2(mobx@5.15.7):
+    dependencies:
+      mobx: 5.15.7
+
+  mobx@5.15.7: {}
+
   module-definition@5.0.1:
     dependencies:
       ast-module-types: 5.0.0
       node-source-walk: 6.0.2
+
+  mousetrap@1.6.5: {}
 
   mri@1.2.0: {}
 
@@ -18242,6 +18359,8 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  preact@10.26.9: {}
+
   precinct@11.0.5:
     dependencies:
       '@dependents/detective-less': 4.1.0
@@ -18362,6 +18481,8 @@ snapshots:
       safe-buffer: 5.2.1
 
   range-parser@1.2.1: {}
+
+  rangy@1.3.2: {}
 
   raw-body@3.0.0:
     dependencies:
@@ -18874,6 +18995,8 @@ snapshots:
     dependencies:
       ip-address: 9.0.5
       smart-buffer: 4.2.0
+
+  sortablejs@1.14.0: {}
 
   sortablejs@1.15.6: {}
 
@@ -19735,10 +19858,16 @@ snapshots:
 
   uuid@11.1.0: {}
 
+  uuid@9.0.1: {}
+
   validate-npm-package-license@3.0.4:
     dependencies:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
+
+  vanilla-picker@2.12.3:
+    dependencies:
+      '@sphinxxxx/color-conversion': 2.2.2
 
   vary@1.1.2: {}
 
@@ -20004,6 +20133,11 @@ snapshots:
       '@vue/shared': 3.5.13
     optionalDependencies:
       typescript: 5.8.3
+
+  vuedraggable@4.1.0(vue@3.5.13(typescript@5.8.3)):
+    dependencies:
+      sortablejs: 1.14.0
+      vue: 3.5.13(typescript@5.8.3)
 
   vxe-pc-ui@4.5.35(vue@3.5.13(typescript@5.8.3)):
     dependencies:

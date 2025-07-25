@@ -1,9 +1,9 @@
 import type { Linter } from 'eslint';
 
 const restrictedImportIgnores = [
-  '**/vite.config.mts',
-  '**/tailwind.config.mjs',
-  '**/postcss.config.mjs',
+  '**/vite.components-config.mts',
+  '**/tailwind.components-config.mjs',
+  '**/postcss.components-config.mjs',
 ];
 
 const customConfig: Linter.Config[] = [
@@ -150,7 +150,7 @@ const customConfig: Linter.Config[] = [
     },
   },
   {
-    files: ['**/**/playwright.config.ts'],
+    files: ['**/**/playwright.components-config.ts'],
     rules: {
       'n/prefer-global/buffer': 'off',
       'n/prefer-global/process': 'off',

@@ -29,3 +29,5 @@ export const AntDesignCloseCircleFilled = createIconifyIcon(
 export const AntDesignClockCircleFilled = createIconifyIcon(
   'ant-design:clock-circle-filled',
 );
+
+export const LucideMove = createIconifyIcon('lucide:move');

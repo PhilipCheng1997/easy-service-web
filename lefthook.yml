@@ -26,8 +26,8 @@
 #     - name: rubocop
 #       glob: "*.rb"
 #       exclude:
-#         - config/application.rb
-#         - config/routes.rb
+#         - components-config/application.rb
+#         - components-config/routes.rb
 #       run: bundle exec rubocop --force-exclusion {all_files}
 #
 #     - name: govet

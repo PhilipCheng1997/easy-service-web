@@ -35,7 +35,7 @@ describe('fileDownloader', () => {
     });
   });
 
-  it('should merge provided config with default config', async () => {
+  it('should merge provided components-config with default components-config', async () => {
     const url = 'https://example.com/file';
     const mockBlob = new Blob(['file content'], { type: 'text/plain' });
     const mockResponse: Blob = mockBlob;

@@ -11,7 +11,6 @@ import 'xterm/css/xterm.css';
 const emit = defineEmits(['success']);
 
 const terminal = ref();
-const isSkipTimeCheck = ref<boolean>(false);
 
 let currentAction: null | string = null;
 let eventSource: EventSource | null = null;
@@ -84,7 +83,7 @@ const [Modal, modalApi] = useVbenModal({
   onOpened() {
     initTerminal();
 
-    const { action, content, isSkipTimeCheck } = modalApi.getData();
+    const { action, content, isSkipTimeCheck, isSkipAction } = modalApi.getData();
     currentAction = action;
     terminal.value.write('\u001B[?25l');
     if (action === 'output') {
@@ -100,7 +99,7 @@ const [Modal, modalApi] = useVbenModal({
       startSpinner();
 
       eventSource = new EventSource(
-        `/api/task/execute/stream?isSkipTimeCheck=${isSkipTimeCheck || false}`,
+        `/api/task/execute/stream?isSkipTimeCheck=${isSkipTimeCheck || false}&isSkipAction=${isSkipAction || false}`,
       );
       eventSource.addEventListener('message', (e) => {
         // 停止旋转指示器

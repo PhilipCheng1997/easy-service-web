@@ -17,7 +17,7 @@ const tailwindPackages: string[] = [];
 
 packages.forEach((pkg) => {
   // apps目录下和 @vben-core/tailwind-ui 包需要使用到 tailwindcss ui
-  // if (fs.existsSync(path.join(pkg.dir, 'tailwind.config.mjs'))) {
+  // if (fs.existsSync(path.join(pkg.dir, 'tailwind.components-config.mjs'))) {
   tailwindPackages.push(pkg.dir);
   // }
 });

@@ -1,0 +1,77 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+
+import {
+  Button,
+  Layout,
+  LayoutContent,
+  LayoutHeader,
+  TabPane,
+  Tabs,
+} from 'ant-design-vue';
+
+import Basic from './components/basic.vue';
+import Extra from './components/extra.vue';
+import Flow from './components/flow.vue';
+import Form from './components/form/form.vue';
+
+enum TabsEnum {
+  basic = 'basic',
+  extra = 'extra',
+  flow = 'flow',
+  form = 'form',
+}
+
+const activeKey = ref<string>(TabsEnum.basic);
+const tabs = [
+  { key: TabsEnum.basic, tab: '基础配置' },
+  { key: TabsEnum.form, tab: '表单配置' },
+  { key: TabsEnum.flow, tab: '流程配置' },
+  { key: TabsEnum.extra, tab: '扩展配置' },
+];
+</script>
+
+<template>
+  <Layout class="flex h-full flex-col">
+    <LayoutHeader class="!bg-background text-foreground border-border border-b">
+      <Tabs
+        v-model:active-key="activeKey"
+        centered
+        :tab-bar-style="{ margin: 0 }"
+      >
+        <template #leftExtra>
+          <div>标题</div>
+        </template>
+        <TabPane v-for="tab in tabs" :key="tab.key" :tab="tab.tab" />
+        <template #rightExtra>
+          <div>
+            <Button type="primary">发布</Button>
+          </div>
+        </template>
+      </Tabs>
+    </LayoutHeader>
+    <LayoutContent class="flex-1">
+      <Basic v-show="activeKey === TabsEnum.basic" />
+      <Form v-show="activeKey === TabsEnum.form" />
+      <Flow v-show="activeKey === TabsEnum.flow" />
+      <Extra v-show="activeKey === TabsEnum.extra" />
+    </LayoutContent>
+  </Layout>
+</template>
+
+<style scoped lang="scss">
+.ant-layout {
+  .ant-layout-header {
+    height: 46px;
+    line-height: 46px;
+  }
+}
+
+.ant-tabs-top {
+  :deep(.ant-tabs-nav) {
+    &::before {
+      border: 0;
+    }
+  }
+}
+</style>

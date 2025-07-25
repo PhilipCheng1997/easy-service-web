@@ -29,13 +29,13 @@ const scopeComplete = execSync('git status --porcelain || true')
  * @type {import('cz-git').UserConfig}
  */
 const userConfig = {
-  extends: ['@commitlint/config-conventional'],
+  extends: ['@commitlint/components-config-conventional'],
   plugins: ['commitlint-plugin-function-rules'],
   prompt: {
     /** @use `pnpm commit :f` */
     alias: {
       b: 'build: bump dependencies',
-      c: 'chore: update config',
+      c: 'chore: update components-config',
       f: 'docs: fix typos',
       r: 'docs: update README',
       s: 'style: update code format',

@@ -26,6 +26,8 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@logicflow/core": "^2.0.16",
+    "@logicflow/extension": "^2.0.21",
     "@vben-core/menu-ui": "workspace:*",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
@@ -48,6 +50,7 @@
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:",
+    "vuedraggable": "^4.1.0",
     "xterm": "^5.3.0",
     "xterm-addon-fit": "^0.8.0"
   }

@@ -21,6 +21,7 @@ import { columns, formSchema } from './data';
 
 const loading = ref<boolean>(false);
 const isSkipTimeCheck = ref<boolean>(false);
+const isSkipAction = ref<boolean>(false);
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
@@ -88,7 +89,7 @@ function openTaskPlanModal() {
 
 function handleExecuteTask() {
   messageModalApi
-    .setData({ action: 'execute', isSkipTimeCheck: isSkipTimeCheck.value })
+    .setData({ action: 'execute', isSkipTimeCheck: isSkipTimeCheck.value, isSkipAction: isSkipAction.value })
     .open();
 }
 </script>
@@ -108,7 +109,16 @@ function handleExecuteTask() {
           </DescriptionsItem>
           <DescriptionsItem v-if="taskPlan" label="执行状态" :span="4">
             {{ taskPlan.latestSuccessful?.executeTime || '' }}
-            <Tag :color="taskPlan.latestSuccessful ? 'success' : 'warning'">
+            <Tag
+              v-if="!taskPlan.isHoliday && !taskPlan.executableTime"
+              color="warning"
+            >
+              待构建
+            </Tag>
+            <Tag
+              v-else
+              :color="taskPlan.latestSuccessful ? 'success' : 'warning'"
+            >
               {{
                 taskPlan.latestSuccessful
                   ? '已执行'
@@ -180,6 +190,7 @@ function handleExecuteTask() {
           {{ row.startTime }} ~ {{ row.endTime }}
         </template>
         <template #toolbar-tools>
+          <Checkbox v-model:checked="isSkipAction">不执行具体动作</Checkbox>
           <Checkbox v-model:checked="isSkipTimeCheck">跳过检查</Checkbox>
           <Button
             type="primary"
