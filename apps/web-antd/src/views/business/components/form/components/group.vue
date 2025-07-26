@@ -76,6 +76,7 @@ function handleDragEnd() {
         v-model="formGroup"
         group="basic"
         item-key="type"
+        handle=".handle"
         :id="id"
         :move="handleMove"
         :class="{ 'h-[100px]': isShowEmptyTip }"

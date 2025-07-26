@@ -35,7 +35,7 @@ function changeCurrentElement(element) {
     @click.stop="changeCurrentElement(element)"
   >
     <div
-      class="handle bg-primary/15 user-select-none absolute right-0 flex cursor-move items-center p-1 text-xs text-gray-500"
+      class="handle bg-primary/15 user-select-none absolute right-0 flex h-6 cursor-move items-center px-1 text-xs text-gray-500"
     >
       <LucideMove />
       <span class="ml-1 cursor-move">{{ element.id }}</span>
