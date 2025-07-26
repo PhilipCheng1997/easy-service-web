@@ -89,7 +89,11 @@ function openTaskPlanModal() {
 
 function handleExecuteTask() {
   messageModalApi
-    .setData({ action: 'execute', isSkipTimeCheck: isSkipTimeCheck.value, isSkipAction: isSkipAction.value })
+    .setData({
+      action: 'execute',
+      isSkipTimeCheck: isSkipTimeCheck.value,
+      isSkipAction: isSkipAction.value,
+    })
     .open();
 }
 </script>

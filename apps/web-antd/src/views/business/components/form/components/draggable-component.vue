@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { defineProps } from 'vue';
 
 import { LucideMove } from '@vben/icons';
 
@@ -30,7 +30,10 @@ function changeCurrentElement(element) {
 </script>
 
 <template>
-  <div class="group relative" @click.stop="changeCurrentElement(element)">
+  <div
+    class="group relative mb-2 last:mb-0"
+    @click.stop="changeCurrentElement(element)"
+  >
     <div
       class="handle bg-primary/15 user-select-none absolute right-0 flex cursor-move items-center p-1 text-xs text-gray-500"
     >
@@ -44,7 +47,11 @@ function changeCurrentElement(element) {
         'active-component': element.id === currentComponent?.id,
       }"
     >
-      <component :is="componentMapping[element.type]" v-bind="element.props" :id="element.id" />
+      <component
+        :is="componentMapping[element.type]"
+        :id="element.id"
+        v-bind="element.props"
+      />
     </div>
     <FormItem
       v-else-if="group === 'basic'"
@@ -65,6 +72,6 @@ function changeCurrentElement(element) {
 }
 
 .component-wrapper {
-  @apply mb-1 border-2 border-dashed p-2;
+  @apply mb-0 border-2 border-dashed bg-gray-50 p-2;
 }
 </style>

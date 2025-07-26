@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
@@ -39,10 +39,12 @@ const [FormModal, formModalApi] = useVbenModal({
   },
 });
 
-const forms = ref([{
-  key: 'form1',
-  label: '表单1',
-}]);
+const forms = ref([
+  {
+    key: 'form1',
+    label: '表单1',
+  },
+]);
 const formConfig = ref({
   formKey: '',
   formName: '',
@@ -66,17 +68,22 @@ function addForm() {
 }
 
 function handleMove(evt) {
-  console.log(evt)
+  console.log(evt);
   if (evt.relatedContext && evt.relatedContext.component) {
     const id = evt.relatedContext.component.$attrs.id;
     const group = evt.relatedContext.component.$attrs.group;
     if (group === 'layout') {
-      formStore.changeMoveInTarget(group)
+      formStore.changeMoveInTarget(group);
     } else if (id) {
-      formStore.changeMoveInTarget(id)
+      formStore.changeMoveInTarget(id);
     }
   }
   return true;
+}
+
+function handleDragEnd() {
+  formStore.changeMoveInTarget('');
+  formStore.changeMoveOutTarget('');
 }
 
 watch(activeForm, (v) => {
@@ -92,7 +99,7 @@ onMounted(() => {
   if (forms.value.length > 0) {
     activeForm.value = [forms.value[0].key];
   }
-})
+});
 </script>
 
 <template>
@@ -130,6 +137,7 @@ onMounted(() => {
         v-model:selected-keys="activeForm"
         :items="forms"
         mode="inline"
+        class="my-2"
       />
       <p v-else class="p-5 text-center text-gray-500">暂无表单</p>
     </CollapsePanel>
@@ -147,7 +155,7 @@ onMounted(() => {
         item-key="type"
         :sort="false"
         :move="handleMove"
-        @end="() => formStore.changeMoveInTarget('')"
+        @end="handleDragEnd"
       >
         <template #item="{ element }">
           <li class="component">
@@ -170,6 +178,7 @@ onMounted(() => {
       background: #ededed;
       border-radius: 0;
     }
+
     .ant-collapse-content {
       .ant-collapse-content-box {
         padding-top: 0;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref } from 'vue';
+import { watch } from 'vue';
 
 import { Form, FormItem, Input } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
@@ -37,7 +37,7 @@ watch(currentComponent, (v) => console.log(v));
             placeholder="请输入"
             v-model:value="currentComponent.props[item.name]"
           />
-<!--                    {{ currentComponent.props[item.name] }}-->
+          <!--                    {{ currentComponent.props[item.name] }}-->
         </template>
       </FormItem>
     </div>

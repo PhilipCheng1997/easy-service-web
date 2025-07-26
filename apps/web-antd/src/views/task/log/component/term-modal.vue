@@ -83,7 +83,8 @@ const [Modal, modalApi] = useVbenModal({
   onOpened() {
     initTerminal();
 
-    const { action, content, isSkipTimeCheck, isSkipAction } = modalApi.getData();
+    const { action, content, isSkipTimeCheck, isSkipAction } =
+      modalApi.getData();
     currentAction = action;
     terminal.value.write('\u001B[?25l');
     if (action === 'output') {

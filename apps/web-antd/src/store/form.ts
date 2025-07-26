@@ -6,6 +6,7 @@ export const useFormStore = defineStore('form', () => {
   const currentForm = ref();
   const currentComponent = ref();
   const moveInTarget = ref('');
+  const moveOutTarget = ref('');
 
   async function getFormConfig(formKey: string, formName: string) {
     currentForm.value = { formKey, formName, components: [] };
@@ -15,18 +16,22 @@ export const useFormStore = defineStore('form', () => {
 
   function setCurrentComponent(element: any) {
     currentComponent.value = element;
-    console.log(currentComponent);
   }
 
   function changeMoveInTarget(target: string) {
     moveInTarget.value = target;
+  }
+  function changeMoveOutTarget(target: string) {
+    moveOutTarget.value = target;
   }
 
   return {
     currentForm,
     currentComponent,
     moveInTarget,
+    moveOutTarget,
     changeMoveInTarget,
+    changeMoveOutTarget,
     getFormConfig,
     setCurrentComponent,
   };
