@@ -525,19 +525,19 @@ importers:
         version: 22.15.3
       '@vben/commitlint-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/commitlint-components-config
+        version: link:internal/lint-configs/commitlint-config
       '@vben/eslint-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/eslint-components-config
+        version: link:internal/lint-configs/eslint-config
       '@vben/prettier-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/prettier-components-config
+        version: link:internal/lint-configs/prettier-config
       '@vben/stylelint-config':
         specifier: workspace:*
-        version: link:internal/lint-configs/stylelint-components-config
+        version: link:internal/lint-configs/stylelint-config
       '@vben/tailwind-config':
         specifier: workspace:*
-        version: link:internal/tailwind-components-config
+        version: link:internal/tailwind-config
       '@vben/tsconfig':
         specifier: workspace:*
         version: link:internal/tsconfig
@@ -546,7 +546,7 @@ importers:
         version: link:scripts/turbo-run
       '@vben/vite-config':
         specifier: workspace:*
-        version: link:internal/vite-components-config
+        version: link:internal/vite-config
       '@vben/vsh':
         specifier: workspace:*
         version: link:scripts/vsh

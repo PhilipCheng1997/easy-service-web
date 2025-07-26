@@ -4,7 +4,7 @@ import type {
 } from '@vben/types/global';
 
 /**
- * 由 vite-inject-app-components-config 注入的全局配置
+ * 由 vite-inject-app-config 注入的全局配置
  */
 export function useAppConfig(
   env: Record<string, any>,

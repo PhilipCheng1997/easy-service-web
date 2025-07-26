@@ -13,7 +13,7 @@ interface PluginOptions {
   root: string;
 }
 
-const GLOBAL_CONFIG_FILE_NAME = '_app.components-config.js';
+const GLOBAL_CONFIG_FILE_NAME = '_app.config.js';
 const VBEN_ADMIN_PRO_APP_CONF = '_VBEN_ADMIN_PRO_APP_CONF_';
 
 /**

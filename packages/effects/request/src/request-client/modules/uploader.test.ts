@@ -47,7 +47,7 @@ describe('fileUploader', () => {
     );
   });
 
-  it('should merge provided components-config with default components-config', async () => {
+  it('should merge provided config with default config', async () => {
     const url = 'https://example.com/upload';
     const file = new File(['file content'], 'test.txt', { type: 'text/plain' });
     const mockResponse: AxiosResponse = {

@@ -59,7 +59,7 @@ export async function run(options: RunOptions) {
 // async function findApps(root: string, packages: Package[]) {
 //   // apps内的
 //   const appPackages = packages.filter((pkg) => {
-//     const viteConfigExists = fs.existsSync(join(pkg.dir, 'vite.components-config.mts'));
+//     const viteConfigExists = fs.existsSync(join(pkg.dir, 'vite.config.mts'));
 //     return pkg.dir.startsWith(join(root, 'apps')) && viteConfigExists;
 //   });
 

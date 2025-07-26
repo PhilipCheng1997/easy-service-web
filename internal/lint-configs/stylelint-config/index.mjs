@@ -1,5 +1,5 @@
 export default {
-  extends: ['stylelint-components-config-standard', 'stylelint-components-config-recess-order'],
+  extends: ['stylelint-config-standard', 'stylelint-config-recess-order'],
   ignoreFiles: [
     '**/*.js',
     '**/*.jsx',
@@ -30,8 +30,8 @@ export default {
     {
       customSyntax: 'postcss-scss',
       extends: [
-        'stylelint-components-config-recommended-scss',
-        'stylelint-components-config-recommended-vue/scss',
+        'stylelint-config-recommended-scss',
+        'stylelint-config-recommended-vue/scss',
       ],
       files: ['*.scss', '**/*.scss'],
     },
