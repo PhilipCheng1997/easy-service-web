@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
 
-import { LucideMove } from '@vben/icons';
-
 import { FormItem } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
 
@@ -35,10 +33,9 @@ function changeCurrentElement(element) {
     @click.stop="changeCurrentElement(element)"
   >
     <div
-      class="handle bg-primary/15 user-select-none absolute right-0 flex h-6 cursor-move items-center px-1 text-xs text-gray-500"
+      class="handle bg-primary/15 absolute right-0 flex items-center p-1 text-xs text-gray-500"
     >
-      <LucideMove />
-      <span class="ml-1 cursor-move">{{ element.id }}</span>
+      <span class="ml-1">{{ element.id }}</span>
     </div>
     <div
       v-if="group === 'layout'"
