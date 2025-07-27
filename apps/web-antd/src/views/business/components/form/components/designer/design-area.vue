@@ -17,7 +17,7 @@ const { currentForm, moveInTarget } = storeToRefs(formStore);
     class="!bg-background text-foreground relative h-full p-3"
   >
     <div
-      v-if="moveInTarget !== 'layout' && currentForm.components.length === 0"
+      v-if="moveInTarget !== 'layout' && currentForm.groups.length === 0"
       class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-gray-500"
     >
       拖拽布局组件到此处
@@ -26,7 +26,7 @@ const { currentForm, moveInTarget } = storeToRefs(formStore);
       <draggable
         class="h-full"
         tag="div"
-        v-model="currentForm.components"
+        v-model="currentForm.groups"
         group="layout"
         item-key="id"
         handle=".handle"

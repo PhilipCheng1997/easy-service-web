@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { computed, defineProps, ref } from 'vue';
+
+import {
+  AntDesignCopyOutlined,
+  AntDesignDeleteOutlined,
+  LucideMove,
+} from '@vben/icons';
 
 import { FormItem } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
@@ -22,27 +28,59 @@ const { element } = defineProps({
 const formStore = useFormStore();
 const { currentComponent } = storeToRefs(formStore);
 
-function changeCurrentElement(element) {
+const componentWrapperClass = computed(() => {
+  return {
+    'border-primary': element.id === currentComponent.value?.id,
+    'hover:border-primary/50': element.id !== currentComponent.value?.id,
+  };
+});
+
+function changeCurrentElement(element: any) {
   formStore.setCurrentComponent(element);
+}
+
+const hoverElementIds = ref<string[]>([]);
+function handleMouseEnter(id: string) {
+  hoverElementIds.value.push(id);
+}
+function handleMouseLeave(id: string) {
+  hoverElementIds.value = hoverElementIds.value.filter(
+    (elId: string) => elId !== id,
+  );
 }
 </script>
 
 <template>
   <div
-    class="group relative mb-2 last:mb-0"
+    class="relative mb-2 last:mb-0"
     @click.stop="changeCurrentElement(element)"
+    @mouseenter="handleMouseEnter(element.id)"
+    @mouseleave="handleMouseLeave(element.id)"
   >
-    <div
-      class="handle bg-primary/15 absolute right-0 flex items-center p-1 text-xs text-gray-500"
+    <!-- 右上角组件标识 -->
+    <span
+      class="bg-primary/15 absolute right-0 px-2 py-1 text-xs text-gray-500"
     >
-      <span class="ml-1">{{ element.id }}</span>
+      {{ element.id }}
+    </span>
+    <!-- 右下角工具类 -->
+    <div
+      v-show="hoverElementIds.includes(element.id)"
+      class="absolute bottom-0 right-0 z-50 flex"
+    >
+      <AntDesignCopyOutlined
+        class="bg-primary/15 ml-1 h-6 w-6 cursor-pointer p-1"
+      />
+      <AntDesignDeleteOutlined
+        class="bg-primary/15 ml-1 h-6 w-6 cursor-pointer p-1"
+      />
+      <LucideMove class="bg-primary/15 handle ml-1 h-6 w-6 cursor-move p-1" />
     </div>
+    <!-- 布局组件-->
     <div
       v-if="group === 'layout'"
       class="component-wrapper"
-      :class="{
-        'active-component': element.id === currentComponent?.id,
-      }"
+      :class="componentWrapperClass"
     >
       <component
         :is="componentMapping[element.type]"
@@ -50,13 +88,12 @@ function changeCurrentElement(element) {
         v-bind="element.props"
       />
     </div>
+    <!-- 表单组件 -->
     <FormItem
       v-else-if="group === 'basic'"
       :label="element?.props.label || element.name || element.type"
       class="component-wrapper"
-      :class="{
-        'active-component': element.id === currentComponent?.id,
-      }"
+      :class="componentWrapperClass"
     >
       <component :is="componentMapping[element.type]" v-bind="element.props" />
     </FormItem>
@@ -64,10 +101,6 @@ function changeCurrentElement(element) {
 </template>
 
 <style scoped lang="scss">
-.active-component {
-  @apply border-primary;
-}
-
 .component-wrapper {
   @apply mb-0 border-2 border-dashed bg-gray-50 p-2;
 }

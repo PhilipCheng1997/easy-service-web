@@ -48,6 +48,7 @@ const forms = ref([
 const formConfig = ref({
   formKey: '',
   formName: '',
+  groups: [],
 });
 const activeForm = ref([]);
 const activeKeys = ref<string[]>([
@@ -68,7 +69,6 @@ function addForm() {
 }
 
 function handleMove(evt) {
-  console.log(evt);
   if (evt.relatedContext && evt.relatedContext.component) {
     const id = evt.relatedContext.component.$attrs.id;
     const group = evt.relatedContext.component.$attrs.group;

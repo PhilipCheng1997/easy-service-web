@@ -30,4 +30,11 @@ export const AntDesignClockCircleFilled = createIconifyIcon(
   'ant-design:clock-circle-filled',
 );
 
+export const AntDesignDeleteOutlined = createIconifyIcon(
+  'ant-design:delete-outlined',
+);
+export const AntDesignCopyOutlined = createIconifyIcon(
+  'ant-design:copy-outlined',
+);
+
 export const LucideMove = createIconifyIcon('lucide:move');

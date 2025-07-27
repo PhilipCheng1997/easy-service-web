@@ -9,7 +9,7 @@ export const useFormStore = defineStore('form', () => {
   const moveOutTarget = ref('');
 
   async function getFormConfig(formKey: string, formName: string) {
-    currentForm.value = { formKey, formName, components: [] };
+    currentForm.value = { formKey, formName, groups: [] };
     currentComponent.value = null;
     return currentForm;
   }
