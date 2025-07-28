@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import { Form, FormItem, Input, TabPane, Tabs, Tag } from 'ant-design-vue';
+import {
+  Form,
+  FormItem,
+  Input,
+  TabPane,
+  Tabs,
+  Tag,
+  Textarea,
+} from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
 
 import { useFormStore } from '#/store';
@@ -72,6 +80,14 @@ watch(currentComponent, (v) => {
             <template v-else-if="item.type === 'input'">
               <Input
                 placeholder="请输入"
+                :value="currentComponent.props[item.name]"
+                @change="handlePropChange(item, $event)"
+              />
+            </template>
+            <template v-else-if="item.type === 'textarea'">
+              <Textarea
+                placeholder="请输入"
+                :rows="3"
                 :value="currentComponent.props[item.name]"
                 @change="handlePropChange(item, $event)"
               />

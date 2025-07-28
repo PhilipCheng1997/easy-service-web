@@ -76,12 +76,17 @@ function handleMouseLeave(id: string) {
       />
       <LucideMove class="bg-primary/15 handle ml-1 h-6 w-6 cursor-move p-1" />
     </div>
-    <!-- 布局组件-->
-    <div
-      v-if="group === 'layout'"
+    <!-- 表单组件 -->
+    <FormItem
+      v-if="group === 'basic'"
+      :label="element?.props.label || element.name || element.type"
       class="component-wrapper"
       :class="componentWrapperClass"
     >
+      <component :is="componentMapping[element.type]" v-bind="element.props" />
+    </FormItem>
+    <!-- 布局组件或其他组件 -->
+    <div v-else class="component-wrapper" :class="componentWrapperClass">
       <component
         :is="componentMapping[element.type]"
         :id="element.id"
@@ -89,15 +94,6 @@ function handleMouseLeave(id: string) {
         v-bind="element.props"
       />
     </div>
-    <!-- 表单组件 -->
-    <FormItem
-      v-else-if="group === 'basic'"
-      :label="element?.props.label || element.name || element.type"
-      class="component-wrapper"
-      :class="componentWrapperClass"
-    >
-      <component :is="componentMapping[element.type]" v-bind="element.props" />
-    </FormItem>
   </div>
 </template>
 

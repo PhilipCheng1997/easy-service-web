@@ -22,10 +22,12 @@ const props = defineProps({
 const { groupName, group } = toRefs(props);
 
 const draggableGroup = {
-  name: 'layout',
+  name: 'group',
   pull: true,
-  put: (_, from) => {
-    return from.options.group.name !== 'layout';
+  put: (to, from) => {
+    const fromGroup = from.options.group.name;
+    const toGroup = to.options.group.name;
+    return fromGroup !== 'layout';
   },
 };
 
@@ -76,7 +78,7 @@ function handleChange(e) {
 
 watch(
   () => group.value.children,
-  (v) => console.log(group.value),
+  () => console.log(group.value),
   { deep: true },
 );
 </script>
@@ -103,7 +105,7 @@ watch(
         @change="handleChange"
       >
         <template #item="{ element }">
-          <DraggableComponent :element="element" group="basic" />
+          <DraggableComponent :element="element" :group="element.group" />
         </template>
       </draggable>
     </div>

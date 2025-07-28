@@ -17,7 +17,7 @@ export default {
         },
         {
           label: '提示内容',
-          type: 'input',
+          type: 'textarea',
           name: 'message',
           default: '提示内容',
         },
