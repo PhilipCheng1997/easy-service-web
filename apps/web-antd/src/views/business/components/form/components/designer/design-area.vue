@@ -9,6 +9,14 @@ import { useFormStore } from '#/store';
 
 import DraggableComponent from '../draggable-component.vue';
 
+const draggableGroup = {
+  name: 'designArea',
+  pull: false,
+  put: (_, from) => {
+    return from.options.group.name !== 'basic';
+  },
+};
+
 const formStore = useFormStore();
 const { currentForm, moveInTarget } = storeToRefs(formStore);
 
@@ -45,7 +53,7 @@ watch(components, (v) => formStore.changeCurrentFormComponents(v), {
         class="h-full"
         tag="div"
         v-model="components"
-        group="layout"
+        :group="draggableGroup"
         item-key="id"
         handle=".handle"
         @change="handleChange"

@@ -59,7 +59,7 @@ function handleMouseLeave(id: string) {
   >
     <!-- 右上角组件标识 -->
     <span
-      class="bg-primary/15 absolute right-0 px-2 py-1 text-xs text-gray-500"
+      class="bg-primary/15 absolute right-0 z-50 px-2 py-1 text-xs text-gray-500"
     >
       {{ element.id }}
     </span>

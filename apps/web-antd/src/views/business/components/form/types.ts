@@ -23,4 +23,5 @@ export interface FormComponentConfigGroup {
   groupKey: string;
   groupName?: string;
   components?: FormComponentConfig[];
+  order: number;
 }

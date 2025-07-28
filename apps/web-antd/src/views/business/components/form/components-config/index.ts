@@ -36,4 +36,6 @@ for (const path in modules) {
   }
 }
 
+componentsConfig.sort((a, b) => a.order - b.order);
+
 export { componentMapping, componentsConfig, schemaMapping };

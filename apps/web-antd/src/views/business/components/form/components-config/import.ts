@@ -6,11 +6,13 @@ export default function importComponentsGroup(
   modules: Record<string, any>,
   groupKey: string,
   groupName: string,
+  order: number = 0,
 ) {
   const group: FormComponentConfigGroup = {
     groupKey,
     groupName,
     components: [],
+    order,
   };
 
   for (const path in modules) {

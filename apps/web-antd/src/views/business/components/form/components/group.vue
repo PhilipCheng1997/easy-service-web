@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, toRefs, watch} from 'vue';
+import { computed, toRefs, watch } from 'vue';
 
 import { storeToRefs } from 'pinia';
 import draggable from 'vuedraggable';
@@ -21,6 +21,14 @@ const props = defineProps({
 });
 const { groupName, group } = toRefs(props);
 
+const draggableGroup = {
+  name: 'layout',
+  pull: true,
+  put: (_, from) => {
+    return from.options.group.name !== 'layout';
+  },
+};
+
 const formStore = useFormStore();
 const { moveInTarget, moveOutTarget } = storeToRefs(formStore);
 
@@ -31,8 +39,8 @@ const isShowEmptyTip = computed(() => {
   }
   // 判断组中是否有组件，决定是否显示空提示
   return (
-    group.value.children.filter((item) => item.id !== moveOutTarget.value).length ===
-    0
+    group.value.children.filter((item) => item.id !== moveOutTarget.value)
+      .length === 0
   );
 });
 
@@ -66,7 +74,11 @@ function handleChange(e) {
   }
 }
 
-watch(() => group.value.children, (v) => console.log(group.value), { deep: true })
+watch(
+  () => group.value.children,
+  (v) => console.log(group.value),
+  { deep: true },
+);
 </script>
 
 <template>
@@ -81,7 +93,7 @@ watch(() => group.value.children, (v) => console.log(group.value), { deep: true 
       </div>
       <draggable
         v-model="group.children"
-        group="basic"
+        :group="draggableGroup"
         item-key="type"
         handle=".handle"
         :id="group.id"
