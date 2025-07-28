@@ -60,6 +60,7 @@ const formRef = ref();
 function handleClone(e: any) {
   return {
     ...e,
+    props: e.props ? { ...e.props } : {},
     id: `${e.type}_${generateShortId()}`,
   };
 }
@@ -87,6 +88,7 @@ function handleDragEnd() {
 }
 
 watch(activeForm, (v) => {
+  console.log('表单切换，是否保存表单数据', formStore.currentForm);
   if (v?.length) {
     const form = forms.value.find((item) => item.key === v[0]);
     if (form) {

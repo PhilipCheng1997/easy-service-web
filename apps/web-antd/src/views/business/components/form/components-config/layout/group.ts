@@ -6,6 +6,7 @@ export default {
   type: 'group',
   name: '模块',
   component: Group,
+  children: [],
   propsConfig: [
     {
       name: '基本属性',

@@ -85,6 +85,7 @@ function handleMouseLeave(id: string) {
       <component
         :is="componentMapping[element.type]"
         :id="element.id"
+        :group="element"
         v-bind="element.props"
       />
     </div>

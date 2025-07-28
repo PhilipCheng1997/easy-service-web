@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue';
+import {computed, toRefs, watch} from 'vue';
 
 import { storeToRefs } from 'pinia';
 import draggable from 'vuedraggable';
@@ -9,30 +9,29 @@ import { useFormStore } from '#/store';
 
 import DraggableComponent from './draggable-component.vue';
 
-const { groupName, id } = defineProps({
+const props = defineProps({
   groupName: {
     type: String,
     default: '模块',
   },
-  id: {
-    type: String,
-    default: '',
+  group: {
+    type: Object,
+    default: () => {},
   },
 });
+const { groupName, group } = toRefs(props);
 
 const formStore = useFormStore();
 const { moveInTarget, moveOutTarget } = storeToRefs(formStore);
 
-const formGroup = ref([]);
-
 const isShowEmptyTip = computed(() => {
-  if (moveInTarget.value === id) {
+  if (moveInTarget.value === group.value.id) {
     // 组件拖拽到该组中，隐藏空提示
     return false;
   }
   // 判断组中是否有组件，决定是否显示空提示
   return (
-    formGroup.value.filter((item) => item.id !== moveOutTarget.value).length ===
+    group.value.children.filter((item) => item.id !== moveOutTarget.value).length ===
     0
   );
 });
@@ -60,6 +59,14 @@ function handleDragEnd() {
   formStore.changeMoveInTarget('');
   formStore.changeMoveOutTarget('');
 }
+
+function handleChange(e) {
+  if (e.added) {
+    formStore.setCurrentComponent(e.added.element);
+  }
+}
+
+watch(() => group.value.children, (v) => console.log(group.value), { deep: true })
 </script>
 
 <template>
@@ -73,14 +80,15 @@ function handleDragEnd() {
         拖拽基础组件到此处
       </div>
       <draggable
-        v-model="formGroup"
+        v-model="group.children"
         group="basic"
         item-key="type"
         handle=".handle"
-        :id="id"
+        :id="group.id"
         :move="handleMove"
         :class="{ 'h-[100px]': isShowEmptyTip }"
         @end="handleDragEnd"
+        @change="handleChange"
       >
         <template #item="{ element }">
           <DraggableComponent :element="element" group="basic" />

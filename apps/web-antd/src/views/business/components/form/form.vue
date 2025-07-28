@@ -19,7 +19,7 @@ import PropertiesPanel from './components/designer/properties-panel.vue';
     </LayoutContent>
     <LayoutSider
       :width="300"
-      class="!bg-background text-foreground border-border border-l p-3"
+      class="!bg-background text-foreground border-border border-l"
     >
       <PropertiesPanel />
     </LayoutSider>
