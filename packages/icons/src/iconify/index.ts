@@ -37,4 +37,11 @@ export const AntDesignCopyOutlined = createIconifyIcon(
   'ant-design:copy-outlined',
 );
 
+export const AntDesignPlusCircleOutlined = createIconifyIcon(
+  'ant-design:plus-circle-outlined',
+);
+export const AntDesignMinusCircleOutlined = createIconifyIcon(
+  'ant-design:minus-circle-outlined',
+);
+
 export const LucideMove = createIconifyIcon('lucide:move');

@@ -37,7 +37,6 @@ export const useFormStore = defineStore('form', () => {
     }
     return null;
   }
-
   function recursiveFindComponentById(id: string, components: any[]) {
     if (!id || !components || components.length === 0) {
       return null;
@@ -54,6 +53,27 @@ export const useFormStore = defineStore('form', () => {
       }
     }
     return null;
+  }
+
+  function deleteComponentById(id: string) {
+    if (currentForm.value.components) {
+      recursiveDeleteComponentById(id, currentForm.value.components);
+    }
+  }
+  function recursiveDeleteComponentById(id: string, components: any[]) {
+    if (!id || !components || components.length === 0) {
+      return;
+    }
+    const index = components.findIndex((component) => (component.id === id));
+    if (index !== -1) {
+      components.splice(index, 1);
+      return;
+    }
+    for (const component of components) {
+      if (component.children) {
+        recursiveDeleteComponentById(id, component.children);
+      }
+    }
   }
 
   function updateCurrentComponentProp(propName: string, propValue: any) {
@@ -73,6 +93,7 @@ export const useFormStore = defineStore('form', () => {
     moveOutTarget,
     changeMoveInTarget,
     changeMoveOutTarget,
+    deleteComponentById,
     getFormConfig,
     setCurrentComponent,
     updateCurrentComponentProp,

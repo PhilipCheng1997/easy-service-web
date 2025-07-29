@@ -2,12 +2,19 @@
 import { computed, ref, watch } from 'vue';
 
 import {
+  AntDesignMinusCircleOutlined,
+  AntDesignPlusCircleOutlined,
+} from '@vben/icons';
+
+import {
+  Button,
   Form,
   FormItem,
   Input,
   Select,
   SelectOption,
   Switch,
+  Table,
   TabPane,
   Tabs,
   Tag,
@@ -19,6 +26,24 @@ import { useFormStore } from '#/store';
 
 import { schemaMapping } from '../../components-config';
 
+const optionsTableColumns = [
+  {
+    title: '选项值',
+    dataIndex: 'value',
+    key: 'value',
+  },
+  {
+    title: '选项描述',
+    dataIndex: 'label',
+    key: 'label',
+  },
+  {
+    title: '操作',
+    key: 'op',
+    width: '50px',
+  },
+];
+
 const formStore = useFormStore();
 const { currentForm, currentComponent } = storeToRefs(formStore);
 const componentProps = computed(() => {
@@ -26,7 +51,24 @@ const componentProps = computed(() => {
 });
 
 function handlePropChange(item, v) {
-  formStore.updateCurrentComponentProp(item.name, item.formatter ? item.formatter(v) : v);
+  formStore.updateCurrentComponentProp(
+    item.name,
+    item.formatter ? item.formatter(v) : v,
+  );
+}
+
+function addOption(item) {
+  const newOptions = [
+    ...componentProps.value[item.name],
+    { value: 'value', label: 'label' },
+  ];
+  handlePropChange(item, newOptions);
+}
+function deleteOption(item, index) {
+  handlePropChange(
+    item,
+    componentProps.value[item.name].filter((_, i) => i !== index),
+  );
 }
 
 const activeTab = ref('');
@@ -120,6 +162,49 @@ watch(currentComponent, (v) => {
                 :checked="componentProps[item.name]"
                 @change="handlePropChange(item, $event)"
               />
+            </template>
+            <template v-else-if="item.type === 'options'">
+              <Table
+                bordered
+                :columns="optionsTableColumns"
+                size="small"
+                :data-source="componentProps[item.name]"
+                :pagination="false"
+              >
+                <template #bodyCell="{ column, record, index }">
+                  <template v-if="column.key === 'value'">
+                    <FormItem class="mb-0">
+                      <Input
+                        placeholder="请输入选项值"
+                        v-model:value="record.value"
+                      />
+                    </FormItem>
+                  </template>
+                  <template v-else-if="column.key === 'label'">
+                    <FormItem class="mb-0">
+                      <Input
+                        placeholder="请输入选项描述"
+                        v-model:value="record.label"
+                      />
+                    </FormItem>
+                  </template>
+                  <template v-else-if="column.key === 'op'">
+                    <div class="flex">
+                      <AntDesignPlusCircleOutlined
+                        class="mr-1 cursor-pointer"
+                        @click="addOption(item)"
+                      />
+                      <AntDesignMinusCircleOutlined
+                        class="cursor-pointer"
+                        @click="deleteOption(item, index)"
+                      />
+                    </div>
+                  </template>
+                </template>
+                <template #emptyText>
+                  <Button type="link" @click="addOption(item)">添加选项</Button>
+                </template>
+              </Table>
             </template>
           </FormItem>
         </div>

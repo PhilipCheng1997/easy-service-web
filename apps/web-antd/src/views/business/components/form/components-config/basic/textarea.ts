@@ -1,11 +1,11 @@
 import type { FormComponentConfig } from '../../types';
 
-import { Select } from 'ant-design-vue';
+import { Textarea } from 'ant-design-vue';
 
 export default {
-  type: 'select',
-  name: '下拉框',
-  component: Select,
+  type: 'textarea',
+  name: '多行文本',
+  component: Textarea,
   propsConfig: [
     {
       name: '基本属性',
@@ -18,19 +18,13 @@ export default {
           name: 'label',
           label: '字段名称',
           type: 'input',
-          default: '下拉框',
+          default: '多行文本',
         },
         {
           name: 'placeholder',
           label: '占位',
           type: 'input',
-          default: '请选择',
-        },
-        {
-          name: 'options',
-          label: '选项',
-          type: 'options',
-          default: [],
+          default: '请输入',
         },
       ],
     },
