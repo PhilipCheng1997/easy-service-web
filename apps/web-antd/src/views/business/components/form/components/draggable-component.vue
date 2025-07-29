@@ -80,11 +80,15 @@ function handleMouseLeave(id: string) {
     <!-- 表单组件 -->
     <FormItem
       v-if="group === 'basic'"
-      :label="element?.props.label || element.name || element.type"
+      :label="element?.props.label"
       class="component-wrapper"
       :class="componentWrapperClass"
     >
-      <component :is="componentMapping[element.type]" v-bind="element.props" />
+      <component :is="componentMapping[element.type]" v-bind="element.props">
+        <template v-if="element.type === 'checkbox'">
+          {{ element.props?.content }}
+        </template>
+      </component>
     </FormItem>
     <!-- 布局组件或其他组件 -->
     <div v-else class="component-wrapper" :class="componentWrapperClass">

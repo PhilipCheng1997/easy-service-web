@@ -130,7 +130,7 @@ watch(currentComponent, (v) => {
               <Input
                 placeholder="请输入"
                 :value="componentProps[item.name]"
-                @change="handlePropChange(item, $event)"
+                @change="handlePropChange(item, $event.target.value)"
               />
             </template>
             <template v-else-if="item.type === 'textarea'">

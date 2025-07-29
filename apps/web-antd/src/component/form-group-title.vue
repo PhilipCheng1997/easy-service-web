@@ -9,7 +9,7 @@ defineProps({
 
 <template>
   <div class="form-group-title">
-    <span class="line"></span>
+    <span class="line bg-primary"></span>
     <span class="title-text">{{ title }}</span>
   </div>
 </template>
@@ -23,7 +23,6 @@ defineProps({
     width: 4px;
     height: 16px;
     margin-right: 8px;
-    background-color: #2f54eb; /* 蓝色 */
     border-radius: 2px;
   }
 

@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { useVbenModal } from '@vben/common-ui';
+
 import {
   Button,
   Layout,
   LayoutContent,
   LayoutHeader,
+  Space,
   TabPane,
   Tabs,
 } from 'ant-design-vue';
+import { storeToRefs } from 'pinia';
+
+import FormRender from '#/component/form-render.vue';
+import { useFormStore } from '#/store';
 
 import Basic from './components/basic.vue';
 import Extra from './components/extra.vue';
@@ -22,6 +29,9 @@ enum TabsEnum {
   form = 'form',
 }
 
+const formStore = useFormStore();
+const { currentForm } = storeToRefs(formStore);
+
 const activeKey = ref<string>(TabsEnum.basic);
 const tabs = [
   { key: TabsEnum.basic, tab: '基础配置' },
@@ -29,6 +39,14 @@ const tabs = [
   { key: TabsEnum.flow, tab: '流程配置' },
   { key: TabsEnum.extra, tab: '扩展配置' },
 ];
+
+const [PreviewFormModal, previewFormModalApi] = useVbenModal({
+  title: '表单预览',
+});
+
+function handleFormPreview() {
+  previewFormModalApi.open();
+}
 </script>
 
 <template>
@@ -44,11 +62,21 @@ const tabs = [
         </template>
         <TabPane v-for="tab in tabs" :key="tab.key" :tab="tab.tab" />
         <template #rightExtra>
-          <div>
+          <Space>
+            <Button
+              v-if="activeKey === TabsEnum.form"
+              type="primary"
+              @click="handleFormPreview"
+            >
+              预览
+            </Button>
             <Button type="primary">发布</Button>
-          </div>
+          </Space>
         </template>
       </Tabs>
+      <PreviewFormModal>
+        <FormRender :form-config="currentForm" />
+      </PreviewFormModal>
     </LayoutHeader>
     <LayoutContent class="flex-1">
       <Basic v-show="activeKey === TabsEnum.basic" />

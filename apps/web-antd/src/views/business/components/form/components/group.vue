@@ -26,7 +26,7 @@ const draggableGroup = {
   pull: true,
   put: (_: any, from: any) => {
     const fromGroup = from.options.group.name;
-    return fromGroup === 'basic';
+    return fromGroup === 'basic' || fromGroup === 'group';
   },
 };
 
