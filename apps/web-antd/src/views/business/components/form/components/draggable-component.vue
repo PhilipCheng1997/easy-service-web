@@ -88,6 +88,7 @@ function handleMouseLeave(id: string) {
     <!-- 布局组件或其他组件 -->
     <div v-else class="component-wrapper" :class="componentWrapperClass">
       <component
+        v-if="element.type"
         :is="componentMapping[element.type]"
         :id="element.id"
         :group="element"

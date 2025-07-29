@@ -12,12 +12,9 @@ import DraggableComponent from '../draggable-component.vue';
 const draggableGroup = {
   name: 'designArea',
   pull: true,
-  put: (to, from) => {
+  put: (_: any, from) => {
     const fromGroup = from.options.group.name;
-    const toGroup = to.options.group.name;
-    return fromGroup === 'group' && toGroup === 'designArea'
-      ? false
-      : fromGroup !== 'basic';
+    return fromGroup !== 'basic' && fromGroup !== 'group';
   },
 };
 

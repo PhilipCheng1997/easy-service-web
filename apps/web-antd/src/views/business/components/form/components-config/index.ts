@@ -21,7 +21,7 @@ for (const path in modules) {
             if (group.props) {
               for (const item of group.props) {
                 if (item.name) {
-                  props[item.name] = item.default || null;
+                  props[item.name] = item.default;
                 }
               }
             }

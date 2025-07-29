@@ -24,10 +24,9 @@ const { groupName, group } = toRefs(props);
 const draggableGroup = {
   name: 'group',
   pull: true,
-  put: (to, from) => {
+  put: (_: any, from: any) => {
     const fromGroup = from.options.group.name;
-    const toGroup = to.options.group.name;
-    return fromGroup !== 'layout';
+    return fromGroup === 'basic';
   },
 };
 

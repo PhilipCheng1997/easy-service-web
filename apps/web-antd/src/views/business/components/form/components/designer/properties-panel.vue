@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import {
   Form,
   FormItem,
   Input,
+  Select,
+  SelectOption,
+  Switch,
   TabPane,
   Tabs,
   Tag,
@@ -18,9 +21,12 @@ import { schemaMapping } from '../../components-config';
 
 const formStore = useFormStore();
 const { currentForm, currentComponent } = storeToRefs(formStore);
+const componentProps = computed(() => {
+  return currentComponent.value?.props || {};
+});
 
-function handlePropChange(item, e) {
-  formStore.updateCurrentComponentProp(item.name, e.target.value);
+function handlePropChange(item, v) {
+  formStore.updateCurrentComponentProp(item.name, item.formatter ? item.formatter(v) : v);
 }
 
 const activeTab = ref('');
@@ -73,6 +79,7 @@ watch(currentComponent, (v) => {
             :key="j"
             :label="item.label"
             :name="item.name"
+            :rules="item.rules"
           >
             <template v-if="item.type === 'id'">
               <Tag>{{ currentComponent.id }}</Tag>
@@ -80,7 +87,7 @@ watch(currentComponent, (v) => {
             <template v-else-if="item.type === 'input'">
               <Input
                 placeholder="请输入"
-                :value="currentComponent.props[item.name]"
+                :value="componentProps[item.name]"
                 @change="handlePropChange(item, $event)"
               />
             </template>
@@ -88,7 +95,29 @@ watch(currentComponent, (v) => {
               <Textarea
                 placeholder="请输入"
                 :rows="3"
-                :value="currentComponent.props[item.name]"
+                :value="componentProps[item.name]"
+                @change="handlePropChange(item, $event.target.value)"
+              />
+            </template>
+            <template v-else-if="item.type === 'select'">
+              <Select
+                :value="componentProps[item.name]"
+                @change="handlePropChange(item, $event)"
+                class="w-full"
+                placeholder="请输入"
+              >
+                <SelectOption
+                  v-for="op in item.options"
+                  :key="op.value"
+                  :value="op.value"
+                >
+                  {{ op.label }}
+                </SelectOption>
+              </Select>
+            </template>
+            <template v-else-if="item.type === 'switch'">
+              <Switch
+                :checked="componentProps[item.name]"
                 @change="handlePropChange(item, $event)"
               />
             </template>

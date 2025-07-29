@@ -1,9 +1,12 @@
+import type { Rule } from 'ant-design-vue/es/form';
+
 import type { Component } from 'vue';
 
 export interface PropsConfigItem {
   type: string;
   label?: string;
   name?: string;
+  rules?: Rule | Rule[];
 }
 
 export interface PropsConfigGroup {

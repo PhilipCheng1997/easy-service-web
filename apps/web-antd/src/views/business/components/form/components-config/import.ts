@@ -28,5 +28,7 @@ export default function importComponentsGroup(
     }
   }
 
+  console.log(group);
+
   return group;
 }
