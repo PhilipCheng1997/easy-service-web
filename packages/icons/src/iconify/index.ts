@@ -15,9 +15,11 @@ export const MdiQqchat = createIconifyIcon('mdi:qqchat');
 export const AntDesignLeftOutlined = createIconifyIcon(
   'ant-design:left-outlined',
 );
-
 export const AntDesignRightOutlined = createIconifyIcon(
   'ant-design:right-outlined',
+);
+export const AntDesignDownOutlined = createIconifyIcon(
+  'ant-design:down-outlined',
 );
 
 export const AntDesignCheckCircleFilled = createIconifyIcon(

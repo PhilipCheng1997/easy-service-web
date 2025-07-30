@@ -10,7 +10,8 @@ import {
   Select,
   Textarea,
 } from 'ant-design-vue';
-import FormGroupTitle from "#/component/form-group-title.vue";
+
+import FormGroupTitle from '#/component/form-group-title.vue';
 
 const { formConfig } = defineProps({
   formConfig: {
@@ -23,7 +24,7 @@ const { formConfig } = defineProps({
 <template>
   <Form v-if="formConfig?.components" layout="vertical">
     <div
-      class="mb-5 last:mb-0"
+      class="mb-4 last:mb-0"
       v-for="component in formConfig.components"
       :key="component.id"
     >
@@ -52,7 +53,10 @@ const { formConfig } = defineProps({
               <Textarea :placeholder="subComponent.props?.placeholder" />
             </template>
             <template v-if="subComponent.type === 'select'">
-              <Select :placeholder="subComponent.props?.placeholder" :options="subComponent.props?.options" />
+              <Select
+                :placeholder="subComponent.props?.placeholder"
+                :options="subComponent.props?.options"
+              />
             </template>
             <template v-if="subComponent.type === 'checkbox'">
               <Checkbox>
@@ -70,7 +74,4 @@ const { formConfig } = defineProps({
 </template>
 
 <style scoped lang="scss">
-.form-item-wrapper {
-  margin-bottom: 10px;
-}
 </style>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import { JsonViewer, useVbenModal } from '@vben/common-ui';
+import { AntDesignDownOutlined } from "@vben/icons";
 
 import {
   Button,
@@ -11,6 +12,9 @@ import {
   Space,
   TabPane,
   Tabs,
+  Dropdown,
+  Menu,
+  MenuItem,
 } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
 
@@ -44,7 +48,10 @@ const [PreviewFormModal, previewFormModalApi] = useVbenModal({
   title: '表单预览',
 });
 
-function handleFormPreview() {
+const previewType = ref('form');
+
+function handleFormPreview(type) {
+  previewType.value = type;
   previewFormModalApi.open();
 }
 </script>
@@ -58,24 +65,38 @@ function handleFormPreview() {
         :tab-bar-style="{ margin: 0 }"
       >
         <template #leftExtra>
-          <div>标题</div>
+          <div class="w-[250px]">标题</div>
         </template>
         <TabPane v-for="tab in tabs" :key="tab.key" :tab="tab.tab" />
         <template #rightExtra>
-          <Space>
-            <Button
-              v-if="activeKey === TabsEnum.form"
-              type="primary"
-              @click="handleFormPreview"
-            >
-              预览
-            </Button>
+          <Space class="w-[250px] justify-end">
+            <Dropdown v-if="activeKey === TabsEnum.form">
+              <template #overlay>
+                <Menu @click="handleFormPreview($event.key)">
+                  <MenuItem key="form">
+                    表单预览
+                  </MenuItem>
+                  <MenuItem key="json">
+                    JSON预览
+                  </MenuItem>
+                </Menu>
+              </template>
+              <Button>
+                <span>预览</span>
+                <AntDesignDownOutlined class="mb-1 ml-1" />
+              </Button>
+            </Dropdown>
             <Button type="primary">发布</Button>
           </Space>
         </template>
       </Tabs>
       <PreviewFormModal>
-        <FormRender :form-config="currentForm" />
+        <FormRender v-if="previewType === 'form'" :form-config="currentForm" />
+        <JsonViewer
+          v-if="previewType === 'json'"
+          :value="currentForm"
+          preview-mode
+        />
       </PreviewFormModal>
     </LayoutHeader>
     <LayoutContent class="flex-1">

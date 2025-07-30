@@ -70,10 +70,11 @@ function handleMouseLeave(id: string) {
     >
       <AntDesignCopyOutlined
         class="bg-primary/15 ml-1 h-6 w-6 cursor-pointer p-1"
+        @click.stop="formStore.copyComponentById(element.id)"
       />
       <AntDesignDeleteOutlined
         class="bg-primary/15 ml-1 h-6 w-6 cursor-pointer p-1"
-        @click="formStore.deleteComponentById(element.id)"
+        @click.stop="formStore.deleteComponentById(element.id)"
       />
       <LucideMove class="bg-primary/15 handle ml-1 h-6 w-6 cursor-move p-1" />
     </div>
