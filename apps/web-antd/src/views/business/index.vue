@@ -2,19 +2,19 @@
 import { ref } from 'vue';
 
 import { JsonViewer, useVbenModal } from '@vben/common-ui';
-import { AntDesignDownOutlined } from "@vben/icons";
+import { AntDesignDownOutlined } from '@vben/icons';
 
 import {
   Button,
+  Dropdown,
   Layout,
   LayoutContent,
   LayoutHeader,
+  Menu,
+  MenuItem,
   Space,
   TabPane,
   Tabs,
-  Dropdown,
-  Menu,
-  MenuItem,
 } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
 
@@ -23,7 +23,7 @@ import { useFormStore } from '#/store';
 
 import Basic from './components/basic.vue';
 import Extra from './components/extra.vue';
-import Flow from './components/flow.vue';
+import Flow from './components/flow/flow.vue';
 import Form from './components/form/form.vue';
 
 enum TabsEnum {
@@ -73,12 +73,8 @@ function handleFormPreview(type) {
             <Dropdown v-if="activeKey === TabsEnum.form">
               <template #overlay>
                 <Menu @click="handleFormPreview($event.key)">
-                  <MenuItem key="form">
-                    表单预览
-                  </MenuItem>
-                  <MenuItem key="json">
-                    JSON预览
-                  </MenuItem>
+                  <MenuItem key="form"> 表单预览 </MenuItem>
+                  <MenuItem key="json"> JSON预览 </MenuItem>
                 </Menu>
               </template>
               <Button>

@@ -6,7 +6,6 @@ export default {
   type: 'alert',
   name: '提示',
   component: Alert,
-  children: [],
   propsConfig: [
     {
       name: '基本属性',
