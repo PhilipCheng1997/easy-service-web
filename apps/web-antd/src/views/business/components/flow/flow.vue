@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import LogicFlow from '@logicflow/core';
 import {
@@ -8,6 +8,14 @@ import {
   MiniMap,
   SelectionSelect,
 } from '@logicflow/extension';
+import {
+  Form,
+  FormItem,
+  Layout,
+  LayoutContent,
+  LayoutSider,
+  Tag,
+} from 'ant-design-vue';
 
 import EndIcon from '#/asserts/flow/end.svg?raw';
 import ForkIcon from '#/asserts/flow/fork.svg?raw';
@@ -38,14 +46,28 @@ LogicFlow.use(MiniMap);
 
 let lf;
 
+const currentElement = ref(null);
+
 onMounted(() => {
   lf = new LogicFlow({
     container: document.querySelector('#flowContainer') as HTMLElement,
-    // grid: {
-    //   size: 20, // 网格大小 10px
-    //   visible: true, // 渲染网格背景
-    // },
     grid: true,
+    keyboard: {
+      enabled: true,
+      shortcuts: [
+        {
+          keys: ['backspace'],
+          callback: () => {
+            const elements = lf.getSelectElements(true);
+            if (elements.edges?.length || elements.nodes?.length) {
+              currentElement.value = null;
+            }
+            elements.edges.forEach((edge) => lf.deleteEdge(edge.id));
+            elements.nodes.forEach((node) => lf.deleteNode(node.id));
+          },
+        },
+      ],
+    },
     animation: true,
     partial: true,
     edgeType: 'bezier',
@@ -62,7 +84,8 @@ onMounted(() => {
       outline: {
         fill: 'transparent',
         stroke: '#0960be',
-        strokeDasharray: '6,4',
+        strokeWidth: 2,
+        strokeDasharray: '6,3',
         hover: {
           stroke: '#0960be80',
         },
@@ -114,12 +137,35 @@ onMounted(() => {
   lf.extension.miniMap?.show();
 
   lf.on('history:change', () => console.log('history:change'));
-  lf.on('element:click', (data) => console.log('element:click', data));
+  lf.on('element:click', (data) => {
+    console.log('element:click', data, currentElement.value);
+    currentElement.value = data;
+  });
+  lf.on('blank:mousedown', () => {
+    currentElement.value = null;
+  });
 });
 </script>
 
 <template>
-  <div id="flowContainer" class="h-full"></div>
+  <Layout class="h-full">
+    <LayoutContent>
+      <div id="flowContainer" class="h-full"></div>
+    </LayoutContent>
+    <LayoutSider
+      :width="300"
+      :collapsed-width="0"
+      :collapsed="!currentElement"
+      class="!bg-background text-foreground border-border"
+      :class="{ 'p-3': !!currentElement, 'border-l': !!currentElement }"
+    >
+      <Form v-if="currentElement" layout="vertical">
+        <FormItem label="元素标识">
+          <Tag>{{ currentElement.data.id }}</Tag>
+        </FormItem>
+      </Form>
+    </LayoutSider>
+  </Layout>
 </template>
 
 <style scoped lang="scss"></style>
