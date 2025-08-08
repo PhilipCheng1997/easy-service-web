@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, h, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import {
@@ -25,8 +25,7 @@ const [TaskParamsModal, taskParamsModalApi] = useVbenModal({
 });
 
 const tasks = [];
-const taskMap = {};
-const subTaskMap = {};
+// const subTaskMap = {};
 const columns = [
   {
     title: '任务类型',
@@ -62,14 +61,19 @@ const paramsSettingTableColumns = [
     key: 'key',
   },
   {
+    title: '参数类型',
+    dataIndex: 'type',
+    key: 'type',
+  },
+  {
     title: '是否必填',
     dataIndex: 'required',
     key: 'required',
   },
 ];
 
+const taskMap = ref<Record<string, any>>({});
 const dataSource = ref<any[]>([]);
-const currentIndex = ref<number>(-1);
 
 function addTask() {
   dataSource.value.push({
@@ -84,13 +88,15 @@ function handleTaskTypeChange(i) {
   dataSource.value[i].subTaskId = null;
 }
 function setTaskParams(i: number) {
-  currentIndex.value = i;
   taskParamsModalApi.open();
 
-  const { taskType, subTaskId } = currentTask.value;
+  const { taskType, subTaskId } = dataSource.value[i];
+  currentTaskType.value = taskType;
+  currentSubTaskId.value = subTaskId;
+
   const current = subTaskId
-    ? subTaskMap[taskType][subTaskId]
-    : taskMap[taskType];
+    ? taskMap.value[taskType].subTaskMap[subTaskId]
+    : taskMap.value[taskType];
 
   if (!current.params) {
     taskParamsModalApi.setState({
@@ -103,30 +109,19 @@ function setTaskParams(i: number) {
       .finally(() => taskParamsModalApi.setState({ loading: false }));
   }
 }
-function paramsSettingTableTitle() {
-  const { taskType, subTaskId } = currentTask.value;
-  let title = taskMap[taskType].label;
-  if (subTaskId) {
-    title += ` (${subTaskMap[taskType][subTaskId].label})`;
-  }
-  return h(Tag, title);
-}
 
-const currentTask = computed(() => {
-  if (!dataSource.value?.length || currentIndex.value === -1) {
-    return null;
+const currentTaskType = ref<string>(null);
+const currentSubTaskId = ref<string>(null);
+
+const currentParams = computed(() => {
+  if (!currentTaskType.value) {
+    return [];
   }
-  return dataSource.value[currentIndex.value];
-});
-const currentTaskConfigParams = computed(() => {
-  const { taskType, subTaskId } = currentTask.value;
-  if (subTaskId) {
-    return subTaskMap[taskType][subTaskId].params;
-  } else if (taskType) {
-    return taskMap[taskType].params;
-  } else {
-    return null;
-  }
+  const params = currentSubTaskId.value
+    ? taskMap.value[currentTaskType.value].subTaskMap[currentSubTaskId.value]
+        .params
+    : taskMap.value[currentTaskType.value].params;
+  return params || { input: [], output: [] };
 });
 
 onMounted(() => {
@@ -136,13 +131,15 @@ onMounted(() => {
         continue;
       }
       tasks.push(task);
-      taskMap[task.value] = task;
-      if (task.children?.length) {
-        subTaskMap[task.value] = {};
-        for (const subTask of task.children) {
-          subTaskMap[task.value][subTask.value] = subTask;
+
+      const newTask = { ...task };
+      if (newTask.children?.length) {
+        newTask.subTaskMap = {};
+        for (const subTask of newTask.children) {
+          newTask.subTaskMap[subTask.value] = subTask;
         }
       }
+      taskMap.value[newTask.value] = newTask;
     }
   });
 });
@@ -151,8 +148,16 @@ onMounted(() => {
 <template>
   <Page>
     <TaskParamsModal>
-      <Table :title="paramsSettingTableTitle" :columns="paramsSettingTableColumns">
-
+      <Table
+        :columns="paramsSettingTableColumns"
+        :data-source="currentParams.input"
+        :pagination="false"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'required'">
+            {{ record.required ? '是' : '否' }}
+          </template>
+        </template>
       </Table>
     </TaskParamsModal>
     <Table
@@ -195,7 +200,7 @@ onMounted(() => {
             class="w-full"
             placeholder="请选择子任务"
             v-model:value="record.subTaskId"
-            v-if="taskMap[record.taskType]?.children.length"
+            v-if="taskMap[record.taskType]?.subTaskMap"
           >
             <SelectOption
               v-for="subTask in taskMap[record.taskType].children"
@@ -222,7 +227,7 @@ onMounted(() => {
               @click="setTaskParams(index)"
               v-if="
                 record.taskType &&
-                (!subTaskMap[record.taskType] || record.subTaskId)
+                (!taskMap[record.taskType].subTaskMap || record.subTaskId)
               "
             />
           </div>
@@ -233,7 +238,9 @@ onMounted(() => {
               <p v-if="item.taskType">
                 {{ taskMap[item.taskType].label }}
                 <span v-if="item.subTaskId" class="text-gray-400">
-                  <br />{{ subTaskMap[item.taskType][item.subTaskId].label }}
+                  <br />{{
+                    taskMap[item.taskType].subTaskMap[item.subTaskId].label
+                  }}
                 </span>
               </p>
               <p v-else class="text-gray-400">请选择任务</p>
