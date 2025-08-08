@@ -8,45 +8,28 @@ import {
   MiniMap,
   SelectionSelect,
 } from '@logicflow/extension';
-import {
-  Form,
-  FormItem,
-  Layout,
-  LayoutContent,
-  LayoutSider,
-  Tag,
-} from 'ant-design-vue';
+import { Layout, LayoutContent, LayoutSider } from 'ant-design-vue';
 
-import EndIcon from '#/asserts/flow/end.svg?raw';
-import ForkIcon from '#/asserts/flow/fork.svg?raw';
-import JoinIcon from '#/asserts/flow/join.svg?raw';
-import StartIcon from '#/asserts/flow/start.svg?raw';
-import TaskIcon from '#/asserts/flow/task.svg?raw';
 import { generateShortId } from '#/utils/id-utils';
 
-import EndNode from './nodes/EndNode';
-import ForkNode from './nodes/ForkNode';
-import JoinNode from './nodes/JoinNode';
-import StartNode from './nodes/StartNode';
-import TaskNode from './nodes/TaskNode';
+import PropertiesForm from '../properties-form.vue';
+import End from './nodes/end';
+import Fork from './nodes/fork';
+import Join from './nodes/join';
+import Start from './nodes/start';
+import Task from './nodes/task';
 
 import '@logicflow/core/lib/style/index.css';
 import '@logicflow/extension/lib/style/index.css';
-
-const taskIconUrl = `data:image/svg+xml;base64,${btoa(TaskIcon)}`;
-const forkIconUrl = `data:image/svg+xml;base64,${btoa(ForkIcon)}`;
-const joinIconUrl = `data:image/svg+xml;base64,${btoa(JoinIcon)}`;
-const endIconUrl = `data:image/svg+xml;base64,${btoa(EndIcon)}`;
-const startIconUrl = `data:image/svg+xml;base64,${btoa(StartIcon)}`;
 
 LogicFlow.use(Control);
 LogicFlow.use(DndPanel);
 LogicFlow.use(SelectionSelect);
 LogicFlow.use(MiniMap);
 
-let lf;
+let lf: LogicFlow;
 
-const currentElement = ref(null);
+const currentElement = ref<any>(null);
 
 onMounted(() => {
   lf = new LogicFlow({
@@ -54,19 +37,6 @@ onMounted(() => {
     grid: true,
     keyboard: {
       enabled: true,
-      shortcuts: [
-        {
-          keys: ['backspace'],
-          callback: () => {
-            const elements = lf.getSelectElements(true);
-            if (elements.edges?.length || elements.nodes?.length) {
-              currentElement.value = null;
-            }
-            elements.edges.forEach((edge) => lf.deleteEdge(edge.id));
-            elements.nodes.forEach((node) => lf.deleteNode(node.id));
-          },
-        },
-      ],
     },
     animation: true,
     partial: true,
@@ -99,52 +69,69 @@ onMounted(() => {
 
   lf.extension.dndPanel?.setPatternItems([
     {
-      type: 'start',
-      label: '开始',
-      icon: startIconUrl,
+      type: Start.type,
+      label: Start.label,
+      icon: Start.icon,
     },
     {
-      type: 'task',
+      type: Task.type,
       text: '用户节点',
-      label: '节点',
-      icon: taskIconUrl,
+      label: Task.label,
+      icon: Task.icon,
     },
     {
-      type: 'fork',
-      label: '分支',
-      icon: forkIconUrl,
+      type: Fork.type,
+      label: Fork.label,
+      icon: Fork.icon,
     },
     {
-      type: 'join',
-      label: '汇合',
-      icon: joinIconUrl,
+      type: Join.type,
+      label: Join.label,
+      icon: Join.icon,
     },
     {
-      type: 'end',
-      label: '结束',
-      icon: endIconUrl,
+      type: End.type,
+      label: End.label,
+      icon: End.icon,
     },
   ]);
 
-  lf.register(TaskNode);
-  lf.register(EndNode);
-  lf.register(ForkNode);
-  lf.register(JoinNode);
-  lf.register(StartNode);
+  lf.register(Task);
+  lf.register(End);
+  lf.register(Fork);
+  lf.register(Join);
+  lf.register(Start);
 
   lf.render({});
 
   lf.extension.miniMap?.show();
 
-  lf.on('history:change', () => console.log('history:change'));
   lf.on('element:click', (data) => {
-    console.log('element:click', data, currentElement.value);
-    currentElement.value = data;
+    currentElement.value = data.data;
+  });
+  lf.on('node:dnd-add', (data) => {
+    currentElement.value = data.data;
+    lf.selectElementById(data.data.id);
   });
   lf.on('blank:mousedown', () => {
-    currentElement.value = null;
+    setTimeout(() => {
+      currentElement.value = null;
+    }, 5);
+  });
+  lf.on('node:delete,edge:delete', (data) => {
+    if (currentElement.value?.id === data.data.id) {
+      currentElement.value = null;
+    }
   });
 });
+
+function handlePropsChange(item, v) {
+  console.log('handlePropsChange', item, v);
+  if (item.name === 'text.value') {
+    lf.updateText(currentElement.value.id, v);
+  }
+  currentElement.value = lf.getDataById(currentElement.value.id);
+}
 </script>
 
 <template>
@@ -159,11 +146,12 @@ onMounted(() => {
       class="!bg-background text-foreground border-border"
       :class="{ 'p-3': !!currentElement, 'border-l': !!currentElement }"
     >
-      <Form v-if="currentElement" layout="vertical">
-        <FormItem label="元素标识">
-          <Tag>{{ currentElement.data.id }}</Tag>
-        </FormItem>
-      </Form>
+      <PropertiesForm
+        v-if="currentElement"
+        :value="currentElement"
+        mode="flow"
+        @change="handlePropsChange"
+      />
     </LayoutSider>
   </Layout>
 </template>

@@ -1,6 +1,6 @@
 import LogicFlow, { HtmlNode, HtmlNodeModel } from '@logicflow/core';
 
-class SvgNode extends HtmlNode {
+class Svg extends HtmlNode {
   getHref() {
     return '';
   }
@@ -14,17 +14,6 @@ class SvgNode extends HtmlNode {
 }
 
 class SvgNodeModel extends HtmlNodeModel {
-  override initNodeData(data: LogicFlow.NodeConfig) {
-    data.text = {
-      value: '',
-      x: data.x,
-      y: data.y + 30,
-    };
-    super.initNodeData(data);
-    this.width = 40;
-    this.height = 40;
-  }
-
   override getDefaultAnchor() {
     const { width, height, x, y, id } = this;
     return [
@@ -54,10 +43,21 @@ class SvgNodeModel extends HtmlNodeModel {
       },
     ];
   }
+
+  override initNodeData(data: LogicFlow.NodeConfig) {
+    data.text = {
+      value: '',
+      x: data.x,
+      y: data.y + 30,
+    };
+    super.initNodeData(data);
+    this.width = 40;
+    this.height = 40;
+  }
 }
 
 export default {
   type: 'svg',
-  view: SvgNode,
+  view: Svg,
   model: SvgNodeModel,
 };
