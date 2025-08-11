@@ -45,6 +45,9 @@ export const AntDesignPlusCircleOutlined = createIconifyIcon(
 export const AntDesignMinusCircleOutlined = createIconifyIcon(
   'ant-design:minus-circle-outlined',
 );
+export const AntDesignInfoCircleOutlined = createIconifyIcon(
+  'ant-design:info-circle-outlined',
+);
 export const AntDesignSettingOutlined = createIconifyIcon(
   'ant-design:setting-outlined',
 );

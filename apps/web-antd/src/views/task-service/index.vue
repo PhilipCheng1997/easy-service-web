@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import {
@@ -10,6 +10,7 @@ import {
 
 import {
   Button,
+  message,
   Select,
   SelectOption,
   Table,
@@ -18,15 +19,28 @@ import {
   TimelineItem,
 } from 'ant-design-vue';
 
-import { getTaskConfigParams, getTaskConfigs } from '#/api/task-service';
+import { getTaskConfigs } from '#/api/task-service';
+import { generateShortId } from '#/utils/id-utils';
+
+import ParamSettingModal from './components/ParamSettingModal.vue';
 
 const [TaskParamsModal, taskParamsModalApi] = useVbenModal({
   title: '设置任务参数',
+  connectedComponent: ParamSettingModal,
+  onOpenChange(isOpen: boolean) {
+    if (!isOpen) {
+      const { data } = taskParamsModalApi.getData();
+      dataSource.value[currentIndex.value].data = data;
+    }
+  },
 });
 
 const tasks = [];
-// const subTaskMap = {};
 const columns = [
+  {
+    title: '序号',
+    key: 'index',
+  },
   {
     title: '任务类型',
     dataIndex: 'taskType',
@@ -49,80 +63,55 @@ const columns = [
     },
   },
 ];
-const paramsSettingTableColumns = [
-  {
-    title: '参数名称',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '参数标识',
-    dataIndex: 'key',
-    key: 'key',
-  },
-  {
-    title: '参数类型',
-    dataIndex: 'type',
-    key: 'type',
-  },
-  {
-    title: '是否必填',
-    dataIndex: 'required',
-    key: 'required',
-  },
-];
 
 const taskMap = ref<Record<string, any>>({});
 const dataSource = ref<any[]>([]);
+const invalidItems = ref<string[]>([]);
+const currentIndex = ref<number>(-1);
 
 function addTask() {
   dataSource.value.push({
     taskType: null,
     subTaskId: null,
+    id: generateShortId(),
+    data: null,
   });
 }
 function deleteTask(i) {
   dataSource.value.splice(i, 1);
+  validateTasks();
 }
 function handleTaskTypeChange(i) {
   dataSource.value[i].subTaskId = null;
+  validateTasks();
 }
-function setTaskParams(i: number) {
-  taskParamsModalApi.open();
-
-  const { taskType, subTaskId } = dataSource.value[i];
-  currentTaskType.value = taskType;
-  currentSubTaskId.value = subTaskId;
-
-  const current = subTaskId
-    ? taskMap.value[taskType].subTaskMap[subTaskId]
-    : taskMap.value[taskType];
-
-  if (!current.params) {
-    taskParamsModalApi.setState({
-      loading: true,
-    });
-    getTaskConfigParams(taskType, subTaskId)
-      .then((data) => {
-        current.params = data;
-      })
-      .finally(() => taskParamsModalApi.setState({ loading: false }));
+async function setTaskParams(i: number) {
+  currentIndex.value = i;
+  const { taskType, subTaskId, data } = dataSource.value[i];
+  taskParamsModalApi.setData({ taskType, subTaskId, data }).open();
+}
+function validateTasks() {
+  invalidItems.value = [];
+  for (const task of dataSource.value) {
+    if (!task.taskType) {
+      invalidItems.value.push(task.id);
+      continue;
+    }
+    if (taskMap.value[task.taskType].subTaskMap && !task.subTaskId) {
+      invalidItems.value.push(task.id);
+      continue;
+    }
+    if (!task.data) {
+      invalidItems.value.push(task.id);
+    }
   }
 }
-
-const currentTaskType = ref<string>(null);
-const currentSubTaskId = ref<string>(null);
-
-const currentParams = computed(() => {
-  if (!currentTaskType.value) {
-    return [];
+function executeTasks() {
+  validateTasks();
+  if (invalidItems.value.length > 0) {
+    message.warning('请先完善任务参数');
   }
-  const params = currentSubTaskId.value
-    ? taskMap.value[currentTaskType.value].subTaskMap[currentSubTaskId.value]
-        .params
-    : taskMap.value[currentTaskType.value].params;
-  return params || { input: [], output: [] };
-});
+}
 
 onMounted(() => {
   getTaskConfigs().then((data) => {
@@ -147,19 +136,7 @@ onMounted(() => {
 
 <template>
   <Page>
-    <TaskParamsModal>
-      <Table
-        :columns="paramsSettingTableColumns"
-        :data-source="currentParams.input"
-        :pagination="false"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'required'">
-            {{ record.required ? '是' : '否' }}
-          </template>
-        </template>
-      </Table>
-    </TaskParamsModal>
+    <TaskParamsModal class="w-[800px]" />
     <Table
       :columns="columns"
       :data-source="dataSource"
@@ -169,12 +146,37 @@ onMounted(() => {
       <template #emptyText>
         <Button type="link" @click="addTask">添加任务</Button>
       </template>
+      <template #headerCell="{ title, column }">
+        <template v-if="column.key === 'execute'">
+          <span>{{ title }}</span>
+          <Button
+            type="primary"
+            class="ml-2"
+            size="small"
+            :disabled="dataSource.length === 0"
+            @click="executeTasks"
+          >
+            执行
+          </Button>
+        </template>
+        <template v-else-if="column.key === 'taskType'">
+          <span class="required-column-title">{{ title }}</span>
+        </template>
+        <template v-else-if="column.key === 'subTaskId'">
+          <span class="required-column-title">{{ title }}</span>
+        </template>
+      </template>
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'taskType'">
           <Select
             class="w-full"
             placeholder="请选择任务类型"
             v-model:value="record.taskType"
+            :status="
+              invalidItems.includes(record.id) && !record.taskType
+                ? 'error'
+                : ''
+            "
             @change="handleTaskTypeChange(index)"
           >
             <SelectOption
@@ -200,7 +202,13 @@ onMounted(() => {
             class="w-full"
             placeholder="请选择子任务"
             v-model:value="record.subTaskId"
+            :status="
+              invalidItems.includes(record.id) && !record.subTaskId
+                ? 'error'
+                : ''
+            "
             v-if="taskMap[record.taskType]?.subTaskMap"
+            @change="validateTasks"
           >
             <SelectOption
               v-for="subTask in taskMap[record.taskType].children"
@@ -224,6 +232,10 @@ onMounted(() => {
             />
             <AntDesignSettingOutlined
               class="mr-1 size-5 cursor-pointer"
+              :class="{
+                'error-status':
+                  invalidItems.includes(record.id) && !record.data,
+              }"
               @click="setTaskParams(index)"
               v-if="
                 record.taskType &&
@@ -231,6 +243,9 @@ onMounted(() => {
               "
             />
           </div>
+        </template>
+        <template v-else-if="column.key === 'index'">
+          {{ index + 1 }}
         </template>
         <template v-else-if="column.key === 'execute'">
           <Timeline>
@@ -252,4 +267,17 @@ onMounted(() => {
   </Page>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.required-column-title::before {
+  display: inline-block;
+  margin-inline-end: 4px;
+  color: #ff4d4f;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
+.error-status {
+  color: #ff4d4f;
+}
+</style>

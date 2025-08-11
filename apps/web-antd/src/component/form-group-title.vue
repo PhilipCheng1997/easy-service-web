@@ -8,9 +8,12 @@ defineProps({
 </script>
 
 <template>
-  <div class="form-group-title">
-    <span class="line bg-primary"></span>
-    <span class="title-text">{{ title }}</span>
+  <div>
+    <div class="form-group-title">
+      <span class="line bg-primary"></span>
+      <span class="title-text">{{ title }}</span>
+    </div>
+    <slot />
   </div>
 </template>
 
@@ -18,6 +21,7 @@ defineProps({
 .form-group-title {
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 
   .line {
     width: 4px;
