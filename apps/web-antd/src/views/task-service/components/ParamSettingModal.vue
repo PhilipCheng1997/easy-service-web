@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { AntDesignInfoCircleOutlined } from '@vben/icons';
 
-import { Select, SelectOption, Table, Textarea, Tooltip } from 'ant-design-vue';
+import {message, Select, SelectOption, Table, Textarea, Tooltip} from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
 
 import FormGroupTitle from '#/component/form-group-title.vue';
@@ -83,6 +83,8 @@ const [Modal, modalApi] = useVbenModal({
     if (invalidParams.value.length === 0) {
       modalApi.setData({ data: paramsData.value });
       modalApi.close();
+    } else {
+      message.warning('请完善任务参数设置');
     }
   },
 });
@@ -93,11 +95,13 @@ function handleParamValueChange(item, v) {
   }
 
   const key = item.key.trim();
-  if (key) {
-    paramsData.value[key] = v;
-  }
-  if (v?.length) {
-    invalidParams.value = invalidParams.value.filter((key) => (key !== item.key));
+  paramsData.value[key] = v;
+  if (item.required) {
+    if (v?.length && invalidParams.value.includes(key)) {
+      invalidParams.value = invalidParams.value.filter((key) => (key !== item.key));
+    } else if (!v?.length && !invalidParams.value.includes(key)) {
+      invalidParams.value.push(key);
+    }
   }
 }
 

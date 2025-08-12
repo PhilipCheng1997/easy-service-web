@@ -10,4 +10,8 @@ async function getTaskConfigParams(taskType, subTaskId) {
   });
 }
 
-export { getTaskConfigParams, getTaskConfigs };
+async function executeTasks(tasks) {
+  return requestClient.post('/task-service/execute', tasks);
+}
+
+export { executeTasks, getTaskConfigParams, getTaskConfigs };

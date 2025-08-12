@@ -19,7 +19,7 @@ import {
   TimelineItem,
 } from 'ant-design-vue';
 
-import { getTaskConfigs } from '#/api/task-service';
+import { executeTasks, getTaskConfigs } from '#/api/task-service';
 import { generateShortId } from '#/utils/id-utils';
 
 import ParamSettingModal from './components/ParamSettingModal.vue';
@@ -81,9 +81,18 @@ function deleteTask(i) {
   dataSource.value.splice(i, 1);
   validateTasks();
 }
-function handleTaskTypeChange(i) {
-  dataSource.value[i].subTaskId = null;
-  validateTasks();
+function handleTaskChange(i: number, key: string, v: any) {
+  const task = dataSource.value[i];
+  if (key === 'taskType') {
+    task.subTaskId = null;
+  }
+  if (!task[key]) {
+    const invalidItemIndex = invalidItems.value.indexOf(task.id);
+    if (invalidItemIndex !== -1) {
+      invalidItems.value.splice(invalidItemIndex, 1);
+    }
+  }
+  task[key] = v;
 }
 async function setTaskParams(i: number) {
   currentIndex.value = i;
@@ -106,11 +115,13 @@ function validateTasks() {
     }
   }
 }
-function executeTasks() {
+function handleExecuteTasks() {
   validateTasks();
   if (invalidItems.value.length > 0) {
     message.warning('请先完善任务参数');
+    return;
   }
+  executeTasks(dataSource.value);
 }
 
 onMounted(() => {
@@ -154,7 +165,7 @@ onMounted(() => {
             class="ml-2"
             size="small"
             :disabled="dataSource.length === 0"
-            @click="executeTasks"
+            @click="handleExecuteTasks"
           >
             执行
           </Button>
@@ -171,13 +182,13 @@ onMounted(() => {
           <Select
             class="w-full"
             placeholder="请选择任务类型"
-            v-model:value="record.taskType"
+            :value="record.taskType"
             :status="
               invalidItems.includes(record.id) && !record.taskType
                 ? 'error'
                 : ''
             "
-            @change="handleTaskTypeChange(index)"
+            @change="handleTaskChange(index, 'taskType', $event)"
           >
             <SelectOption
               v-for="task in tasks"
@@ -201,14 +212,14 @@ onMounted(() => {
           <Select
             class="w-full"
             placeholder="请选择子任务"
-            v-model:value="record.subTaskId"
+            :value="record.subTaskId"
             :status="
               invalidItems.includes(record.id) && !record.subTaskId
                 ? 'error'
                 : ''
             "
             v-if="taskMap[record.taskType]?.subTaskMap"
-            @change="validateTasks"
+            @change="handleTaskChange(index, 'subTaskId', $event)"
           >
             <SelectOption
               v-for="subTask in taskMap[record.taskType].children"
